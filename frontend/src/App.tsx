@@ -6,7 +6,7 @@ import { Pair } from './types'
 
 const App = () => {
   const [allTradingPairs, setAllTradingPairs] = useState<Pair[]>([])
-  const [selectedCrypto, setSelectedCrypto] = useState<Pair | string>('')
+  const [selectedTradingPair, setSelectedTradingPair] = useState('')
 
   const url = 'https://api.pro.coinbase.com'
 
@@ -21,14 +21,27 @@ const App = () => {
           else return 0
         })
       setAllTradingPairs(filteredAndSorted)
-      console.log(filteredAndSorted)
-
     }
     fetchAllTradingPairs()
   }, [])
 
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedTradingPair(e.target.value)
+  }
+
+  const renderOptions = () => {
+    return allTradingPairs.map((pair, i) => {
+      return (
+        <option key={i} value={pair.id}>{pair.display_name}</option>
+      )
+    })
+  }
+
   return (
     <div className="App">
+      <select name="trading-pair" value={selectedTradingPair} onChange={handleSelect}>
+        {renderOptions()}
+      </select>
     </div>
   );
 }
