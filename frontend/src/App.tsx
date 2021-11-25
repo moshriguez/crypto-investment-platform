@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 // Types
-import { Digest, Pair } from './types'
+import { Candle, Digest, Pair } from './types'
 
 const App = () => {
   const [allTradingPairs, setAllTradingPairs] = useState<Pair[]>([])
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
+  const [historicalData, setHistoricalData] = useState<Candle[]>([])
 
   const ws = useRef<WebSocket | null>(null)
   const url = 'https://api.pro.coinbase.com'
@@ -32,6 +33,7 @@ const App = () => {
 
   useEffect(() => {
     if(selectedTradingPair === '') return
+    // subscribe to Coinbase via web socket
     const subscribe = {
       type: 'subscribe',
       product_ids: [selectedTradingPair],
@@ -42,9 +44,18 @@ const App = () => {
       ws.current.onmessage = (e) => {
         const res: Digest = JSON.parse(e.data)
         setPrice(res.price)
-        console.log(res)
       }
     }
+    // get historical data for chart
+    const fetchHistoricalData = async () => {
+      const res = await fetch(`${url}/products/${selectedTradingPair}/candles?granularity=86400`)
+      const data: Candle[] = await res.json()
+      console.log(data)
+      // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
+      // Candle array arranged from end to start
+      setHistoricalData(data)
+    }
+    fetchHistoricalData()
   }, [selectedTradingPair])
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {

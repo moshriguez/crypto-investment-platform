@@ -38,3 +38,5 @@ export interface Digest {
     volume_24h: string
     volume_30d: string
 }
+
+export type Candle = number[]
