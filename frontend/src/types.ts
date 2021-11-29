@@ -40,3 +40,8 @@ export interface Digest {
 }
 
 export type Candle = number[]
+
+export interface HistoricalData {
+    date: number | Date
+    price: number
+}

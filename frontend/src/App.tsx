@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 // Types
-import { Candle, Digest, Pair } from './types'
+import { Candle, Digest, HistoricalData, Pair } from './types'
 
 const App = () => {
   const [allTradingPairs, setAllTradingPairs] = useState<Pair[]>([])
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
-  const [historicalData, setHistoricalData] = useState<Candle[]>([])
+  const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
 
   const ws = useRef<WebSocket | null>(null)
   const url = 'https://api.pro.coinbase.com'
@@ -49,11 +49,16 @@ const App = () => {
     // get historical data for chart
     const fetchHistoricalData = async () => {
       const res = await fetch(`${url}/products/${selectedTradingPair}/candles?granularity=86400`)
-      const data: Candle[] = await res.json()
-      console.log(data)
       // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
       // Candle array arranged from end to start
-      setHistoricalData(data)
+      const data: Candle[] = await res.json()
+      const formattedData: HistoricalData[] = data.map(c => {
+        return {
+          date: new Date(c[0] * 1000),
+          price: c[4]
+        }
+      })
+      setHistoricalData(formattedData)
     }
     fetchHistoricalData()
   }, [selectedTradingPair])
