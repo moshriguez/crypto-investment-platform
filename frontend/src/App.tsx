@@ -36,30 +36,6 @@ const App = () => {
     return () => {if(ws.current) ws.current.close()}
   }, [])
 
-  useEffect(() => {
-    if(selectedTradingPair === '') return
-    // subscribe to Coinbase via web socket
-    const subscribe = {
-      type: 'subscribe',
-      product_ids: [selectedTradingPair],
-      channels: ['ticker']
-    }
-    if (ws.current) {
-      ws.current.send(JSON.stringify(subscribe))
-      ws.current.onmessage = (e) => {
-        const res: Digest = JSON.parse(e.data)
-        setPrice(res.price)
-      }
-    }
-
-    fetchHistoricalData()
-  }, [selectedTradingPair])
-
-  useEffect(() => {
-    if(selectedTradingPair === '') return
-    fetchHistoricalData()
-  }, [timeframe])
-
   // get historical data for chart
   const fetchHistoricalData = async () => {
     let granularity = {
@@ -83,6 +59,31 @@ const App = () => {
     })
     setHistoricalData(formattedData)
   }
+  
+  useEffect(() => {
+    if(selectedTradingPair === '') return
+    // subscribe to Coinbase via web socket
+    const subscribe = {
+      type: 'subscribe',
+      product_ids: [selectedTradingPair],
+      channels: ['ticker']
+    }
+    if (ws.current) {
+      ws.current.send(JSON.stringify(subscribe))
+      ws.current.onmessage = (e) => {
+        const res: Digest = JSON.parse(e.data)
+        setPrice(res.price)
+      }
+    }
+
+    fetchHistoricalData()
+  }, [fetchHistoricalData, selectedTradingPair])
+
+  useEffect(() => {
+    if(selectedTradingPair === '') return
+    fetchHistoricalData()
+  }, [fetchHistoricalData, timeframe])
+
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTradingPair(e.target.value)
