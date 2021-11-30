@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
+import MainGraph from './components/MainGraph';
+import { calcStartDate } from './utils'
+
 // Types
 import { Candle, Digest, HistoricalData, Pair } from './types'
 
@@ -9,6 +12,7 @@ const App = () => {
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
+  const [timeframe, setTimeframe] = useState('1D')
 
   const ws = useRef<WebSocket | null>(null)
   const url = 'https://api.pro.coinbase.com'
@@ -48,7 +52,10 @@ const App = () => {
     }
     // get historical data for chart
     const fetchHistoricalData = async () => {
-      const res = await fetch(`${url}/products/${selectedTradingPair}/candles?granularity=86400`)
+      let gran = 3600
+      let now = new Date()
+      let startDate = calcStartDate(now, '7D')
+      const res = await fetch(`${url}/products/${selectedTradingPair}/candles?granularity=${gran}&start=${startDate.toISOString()}&end=${now.toISOString()}`)
       // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
       // Candle array arranged from end to start
       const data: Candle[] = await res.json()
@@ -81,6 +88,17 @@ const App = () => {
         {renderOptions()}
       </select>
       <p>{price}</p>
+      <MainGraph 
+        data={historicalData}
+        height={500}
+        width={750}
+        margin={{
+          top: 16,
+          right: 16,
+          bottom: 40,
+          left: 48
+        }}
+      />
     </div>
   );
 }
