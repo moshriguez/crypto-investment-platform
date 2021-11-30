@@ -41,6 +41,8 @@ export interface Digest {
 
 export type Candle = number[]
 
+export type Timeframe = '1D' | '7D' | '1M' | '3M'
+
 export interface HistoricalData {
     date: number | Date
     price: number

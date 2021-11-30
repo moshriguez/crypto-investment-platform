@@ -1,4 +1,4 @@
-import { HistoricalData } from "./types";
+import { HistoricalData, Timeframe } from "./types";
 
 export const findMinPrice = (arr: HistoricalData[]) => {
     let min = Infinity
@@ -20,7 +20,7 @@ export const findMaxPrice = (arr: HistoricalData[]) => {
     return max
 }
 
-export const calcStartDate = (now: Date, timeframe: '1D' | '7D' | '1M' | '3M') => {
+export const calcStartDate = (now: Date, timeframe: Timeframe) => {
     const timeMapper = {
         '1D': 1000 * 60 * 60 * 24,
         '7D': 1000 * 60 * 60 * 24 * 7,
