@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material'
 
+import NavBar from './components/NavBar'
 import MainGraph from './components/MainGraph';
 import { calcStartDate } from './utils'
 
@@ -51,6 +53,7 @@ const App = () => {
     // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
     // Candle array arranged from end to start
     const data: Candle[] = await res.json()
+    console.log(data)
     const formattedData: HistoricalData[] = data.map(c => {
       return {
         date: new Date(c[0] * 1000),
@@ -77,60 +80,63 @@ const App = () => {
     }
 
     fetchHistoricalData()
-  }, [fetchHistoricalData, selectedTradingPair])
+  }, [selectedTradingPair])
 
   useEffect(() => {
     if(selectedTradingPair === '') return
     fetchHistoricalData()
-  }, [fetchHistoricalData, timeframe])
+  }, [timeframe])
 
 
-  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedTradingPair(e.target.value)
-  }
+  // const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSelectedTradingPair(e.target.value)
+  // }
 
   const handleTimeframeSelect = (e: React.MouseEvent<HTMLElement, MouseEvent>, newTimeframe: Timeframe) => {
     setTimeframe(newTimeframe)
   }
 
-  const renderOptions = () => {
-    return allTradingPairs.map((pair, i) => {
-      return (
-        <option key={i} value={pair.id}>{pair.display_name}</option>
-      )
-    })
-  }
+  // const renderOptions = () => {
+  //   return allTradingPairs.map((pair, i) => {
+  //     return (
+  //       <option key={i} value={pair.id}>{pair.display_name}</option>
+  //     )
+  //   })
+  // }
 
   return (
-    <div className="App">
-      <select name="trading-pair" value={selectedTradingPair} onChange={handleSelect}>
-        {renderOptions()}
-      </select>
-      <ToggleButtonGroup
-        value={timeframe}
-        exclusive
-        onChange={handleTimeframeSelect}
-        aria-label='timeframe'
-      >
-        <ToggleButton value='1D' aria-label='1 day'>1D</ToggleButton>
-        <ToggleButton value='7D' aria-label='7 days'>7D</ToggleButton>
-        <ToggleButton value='1M' aria-label='1 month'>1M</ToggleButton>
-        <ToggleButton value='3M' aria-label='3 months'>3M</ToggleButton>
-        {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
-      </ToggleButtonGroup>
-      <p>{price}</p>
-      <MainGraph 
-        data={historicalData}
-        height={500}
-        width={750}
-        margin={{
-          top: 16,
-          right: 16,
-          bottom: 40,
-          left: 48
-        }}
-      />
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <NavBar selectedTradingPair={selectedTradingPair} allTradingPairs={allTradingPairs} setSelectedTradingPair={setSelectedTradingPair}/>
+        {/* <select name="trading-pair" value={selectedTradingPair} onChange={handleSelect}>
+          {renderOptions()}
+        </select> */}
+        <ToggleButtonGroup
+          value={timeframe}
+          exclusive
+          onChange={handleTimeframeSelect}
+          aria-label='timeframe'
+        >
+          <ToggleButton value='1D' aria-label='1 day'>1D</ToggleButton>
+          <ToggleButton value='7D' aria-label='7 days'>7D</ToggleButton>
+          <ToggleButton value='1M' aria-label='1 month'>1M</ToggleButton>
+          <ToggleButton value='3M' aria-label='3 months'>3M</ToggleButton>
+          {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
+        </ToggleButtonGroup>
+        <p>{price}</p>
+        <MainGraph 
+          data={historicalData}
+          height={500}
+          width={750}
+          margin={{
+            top: 16,
+            right: 16,
+            bottom: 40,
+            left: 48
+          }}
+        />
+      </div>
+    </BrowserRouter>
   );
 }
 
