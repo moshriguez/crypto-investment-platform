@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css';
-import { ToggleButtonGroup, ToggleButton } from '@mui/material'
 
 import NavBar from './components/NavBar'
-import MainGraph from './components/MainGraph';
+import Auth from './components/Auth'
+import Home from './components/Home'
 import { calcStartDate } from './utils'
 
 // Types
@@ -88,53 +88,18 @@ const App = () => {
   }, [timeframe])
 
 
-  // const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setSelectedTradingPair(e.target.value)
-  // }
-
   const handleTimeframeSelect = (e: React.MouseEvent<HTMLElement, MouseEvent>, newTimeframe: Timeframe) => {
     setTimeframe(newTimeframe)
   }
-
-  // const renderOptions = () => {
-  //   return allTradingPairs.map((pair, i) => {
-  //     return (
-  //       <option key={i} value={pair.id}>{pair.display_name}</option>
-  //     )
-  //   })
-  // }
 
   return (
     <BrowserRouter>
       <div className="App">
         <NavBar selectedTradingPair={selectedTradingPair} allTradingPairs={allTradingPairs} setSelectedTradingPair={setSelectedTradingPair}/>
-        {/* <select name="trading-pair" value={selectedTradingPair} onChange={handleSelect}>
-          {renderOptions()}
-        </select> */}
-        <ToggleButtonGroup
-          value={timeframe}
-          exclusive
-          onChange={handleTimeframeSelect}
-          aria-label='timeframe'
-        >
-          <ToggleButton value='1D' aria-label='1 day'>1D</ToggleButton>
-          <ToggleButton value='7D' aria-label='7 days'>7D</ToggleButton>
-          <ToggleButton value='1M' aria-label='1 month'>1M</ToggleButton>
-          <ToggleButton value='3M' aria-label='3 months'>3M</ToggleButton>
-          {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
-        </ToggleButtonGroup>
-        <p>{price}</p>
-        <MainGraph 
-          data={historicalData}
-          height={500}
-          width={750}
-          margin={{
-            top: 16,
-            right: 16,
-            bottom: 40,
-            left: 48
-          }}
-        />
+        <Routes>
+          <Route path='/' element={<Home price={price} timeframe={timeframe} historicalData={historicalData} handleTimeframeSelect={handleTimeframeSelect} />}/>
+          <Route path='/auth' element={<Auth/>}/>
+        </Routes>
       </div>
     </BrowserRouter>
   );
