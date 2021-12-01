@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { AppBar, Autocomplete, Avatar, Box, Button, Container, IconButton, Menu, MenuItem, TextField, Toolbar, Tooltip, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import decode, { JwtPayload } from 'jwt-decode';
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 
 // Types
 import { Pair } from '../types'
