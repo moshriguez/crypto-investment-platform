@@ -47,3 +47,11 @@ export interface HistoricalData {
     date: number | Date
     price: number
 }
+
+export interface User {
+    name: string
+    email: string
+    password: string
+    watchList: string[]
+    _id: string
+}

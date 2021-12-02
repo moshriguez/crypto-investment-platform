@@ -8,7 +8,7 @@ import Home from './components/Home'
 import { calcStartDate } from './utils'
 
 // Types
-import { Candle, Digest, HistoricalData, Pair, Timeframe } from './types'
+import { Candle, Digest, HistoricalData, Pair, Timeframe, User } from './types'
 
 const App = () => {
   const [allTradingPairs, setAllTradingPairs] = useState<Pair[]>([])
@@ -16,6 +16,8 @@ const App = () => {
   const [price, setPrice] = useState('')
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
+  const [user, setUser] = useState<User | null>(null)
+
 
   const ws = useRef<WebSocket | null>(null)
   const url = 'https://api.pro.coinbase.com'
@@ -53,7 +55,7 @@ const App = () => {
     // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
     // Candle array arranged from end to start
     const data: Candle[] = await res.json()
-    console.log(data)
+    // console.log(data)
     const formattedData: HistoricalData[] = data.map(c => {
       return {
         date: new Date(c[0] * 1000),
@@ -95,10 +97,16 @@ const App = () => {
   return (
     <BrowserRouter>
       <div className="App">
-        <NavBar selectedTradingPair={selectedTradingPair} allTradingPairs={allTradingPairs} setSelectedTradingPair={setSelectedTradingPair}/>
+        <NavBar 
+        selectedTradingPair={selectedTradingPair} 
+        allTradingPairs={allTradingPairs} 
+        setSelectedTradingPair={setSelectedTradingPair}
+        user={user}
+        setUser={setUser}
+        />
         <Routes>
           <Route path='/' element={<Home price={price} timeframe={timeframe} historicalData={historicalData} handleTimeframeSelect={handleTimeframeSelect} />}/>
-          <Route path='/auth' element={<Auth/>}/>
+          <Route path='/auth' element={<Auth setUser={setUser}/>}/>
         </Routes>
       </div>
     </BrowserRouter>
