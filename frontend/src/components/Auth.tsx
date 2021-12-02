@@ -36,21 +36,23 @@ const Auth: React.FC<AuthProps> = ({ setUser }) => {
             },
             body: JSON.stringify(formData)
         }
-        try {
-            let res
-            if(isSignUp) {
-                res = await fetch(url + 'signup', configObj)
-            } else {
-                res = await fetch(url + 'signin', configObj)
-            }
-            const data = await res.json()
-            console.log(data)
+        
+        let res
+        if(isSignUp) {
+            res = await fetch(url + 'signup', configObj)
+        } else {
+            res = await fetch(url + 'signin', configObj)
+        }
+        const data = await res.json()
+        console.log(data)
+        if(data.message) {
+            //todo: need to handle errors and display them to the user
+            console.log('theres and error')
+        } else {
             localStorage.setItem("jwt", data.token)
             setUser(data.result)
             //TODO change to watch list once built
             navigate('/')          
-        } catch (error) {
-            console.log(error)
         }
     }
 
