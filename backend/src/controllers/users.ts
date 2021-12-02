@@ -55,3 +55,11 @@ export const getUser = async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ message: 'User does not exist with that id'})
     res.status(200).json({user})
 }
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const { id } = req.params
+    
+    const deletedItem = await User.findByIdAndRemove(id)
+    if(deletedItem) return res.json({ message: 'Post deleted successfully', deletedItem})
+    res.status(404).send('User does not exist with that id')
+}

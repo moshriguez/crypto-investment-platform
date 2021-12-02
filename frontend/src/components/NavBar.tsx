@@ -54,8 +54,9 @@ const NavBar: React.FC<NavBarProps> = ({
     setAnchorElUser(null);
   };
 
+  const token = localStorage.getItem("jwt");
+  
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
     if (token) {
       type myJwtPayload = JwtPayload & { id: string };
       const decodedToken: myJwtPayload = decode(token);
@@ -74,10 +75,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 Authorization: `Bearer ${token}`,
               },
             };
-            let res = await fetch(
-              "http://localhost:5000/users/" + decodedToken.id,
-              configObj
-            );
+            let res = await fetch("http://localhost:5000/users/" + decodedToken.id, configObj);
             const data = await res.json();
             setUser(data.user);
           };
@@ -85,13 +83,32 @@ const NavBar: React.FC<NavBarProps> = ({
         }
       }
     }
-  }, []);
+  }, [token]);
 
   const logout = () => {
     localStorage.clear();
     navigate("/auth");
     setUser(null);
   };
+
+  const deleteUser = async () => {
+    const configObj = {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      }
+    }
+    console.log('here')
+    if (user) {
+      let res = await fetch("http://localhost:5000/users/" + user._id, configObj);
+      const data = await res.json();
+      console.log(data, token)
+    }
+    localStorage.clear();
+    setUser(null)
+    navigate('/')
+  }
 
   return (
     <AppBar position="static">
@@ -159,6 +176,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 Watch List
               </Button>
             ) : null}
+          </Box>
             <Autocomplete
               disablePortal
               options={allTradingPairs}
@@ -176,13 +194,12 @@ const NavBar: React.FC<NavBarProps> = ({
                 <TextField {...params} label="Cryptocurrency" />
               )}
             />
-          </Box>
 
           <Box sx={{ flexGrow: 0 }}>
             {user ? (
               <>
                 <Tooltip title="Account Options">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <IconButton onClick={handleOpenUserMenu} sx={{ px: 2 }}>
                     <Avatar alt={user.name}>{user.name.charAt(0)}</Avatar>
                   </IconButton>
                 </Tooltip>
@@ -202,7 +219,10 @@ const NavBar: React.FC<NavBarProps> = ({
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={() => {
+                    deleteUser()
+                    handleCloseUserMenu()
+                  }}>
                     <Typography textAlign="center">Delete Account</Typography>
                   </MenuItem>
                   <MenuItem
