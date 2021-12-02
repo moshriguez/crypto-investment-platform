@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css';
 
+import WatchList from './components/WatchList'
 import NavBar from './components/NavBar'
 import Auth from './components/Auth'
 import Home from './components/Home'
@@ -107,6 +108,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home price={price} timeframe={timeframe} historicalData={historicalData} handleTimeframeSelect={handleTimeframeSelect} />}/>
           <Route path='/auth' element={<Auth setUser={setUser}/>}/>
+          <Route path='/watchlist' element={<WatchList list={user ? user.watchList : null} />}/>
         </Routes>
       </div>
     </BrowserRouter>
