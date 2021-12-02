@@ -44,6 +44,7 @@ const Auth: React.FC<AuthProps> = ({ setUser }) => {
                 res = await fetch(url + 'signin', configObj)
             }
             const data = await res.json()
+            console.log(data)
             localStorage.setItem("jwt", data.token)
             setUser(data.result)
             //TODO change to watch list once built
