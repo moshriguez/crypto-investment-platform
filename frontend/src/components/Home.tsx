@@ -28,31 +28,7 @@ const Home: React.FC<HomeProps> = ({ handleTimeframeSelect, historicalData, logo
   const navigate = useNavigate();
   const token = localStorage.getItem("jwt");
 
-  const addToWatchList = async () => {
-    if (user) {
-      const updatedList = [...user.watchList, selectedTradingPair]
-      const body = {
-        watchList: updatedList
-      }
-      const configObj = {
-        method: 'PATCH',
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(body)
-      }
-      const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
-      const data = await res.json()
-      setUser(data.user)
-    }
-  }
-
-  const removeFromWatchList = () => {
-    console.log('remove')
-  }
-
-  const toggleWatchList = () => {
+  const toggleWatchList = async () => {
     if (token) {
       const decodedToken: JwtPayload = decode(token);
 
@@ -62,7 +38,29 @@ const Home: React.FC<HomeProps> = ({ handleTimeframeSelect, historicalData, logo
           logout();
           navigate('/auth')
         } else {
-          user?.watchList.includes(selectedTradingPair) ? removeFromWatchList() : addToWatchList()
+          if (user) {
+            let updatedList
+            // check if crypto is in watch list and add it or remove it
+            if (user.watchList.includes(selectedTradingPair)) {
+              updatedList = user.watchList.filter(el => el !== selectedTradingPair)
+            } else {
+              updatedList = [...user.watchList, selectedTradingPair]
+            }
+            const body = {
+              watchList: updatedList
+            }
+            const configObj = {
+              method: 'PATCH',
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify(body)
+            }
+            const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
+            const data = await res.json()
+            setUser(data.user)
+          }
         }
       }
     }
