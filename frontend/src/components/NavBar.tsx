@@ -38,8 +38,8 @@ const NavBar: React.FC<NavBarProps> = ({
   logout
 }) => {
   const navigate = useNavigate();
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
