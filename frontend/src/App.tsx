@@ -6,7 +6,7 @@ import WatchList from './components/WatchList'
 import NavBar from './components/NavBar'
 import Auth from './components/Auth'
 import Home from './components/Home'
-import { calcStartDate } from './utils'
+import { calcPercentChange, calcStartDate } from './utils'
 
 // Types
 import { Candle, Digest, HistoricalData, Pair, Timeframe, User } from './types'
@@ -16,6 +16,7 @@ const App = () => {
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
   const [cryptoName, setCryptoName] = useState('')
+  const [percentChange, setPercentChange] = useState('')
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
   const [user, setUser] = useState<User | null>(null)
@@ -88,11 +89,13 @@ const App = () => {
       ws.current.onmessage = (e) => {
         const res: Digest = JSON.parse(e.data)
         setPrice(res.price)
+        setPercentChange(calcPercentChange(res.open_24h, res.price))
       }
     }
 
     fetchHistoricalData()
     fetchCryptoName()
+    
   }, [selectedTradingPair])
 
   useEffect(() => {
@@ -136,6 +139,7 @@ const App = () => {
             <Home 
               price={price} 
               cryptoName={cryptoName}
+              percentChange={percentChange}
               timeframe={timeframe} 
               historicalData={historicalData} 
               handleTimeframeSelect={handleTimeframeSelect} 

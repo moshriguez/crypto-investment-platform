@@ -37,3 +37,14 @@ export const calcStartDate = (now: Date, timeframe: Timeframe) => {
 export const currencyFormatter = (n: number) => {
     return numeral(n).format('$0,0.00')
 }
+
+export const calcPercentChange = (openPrice: string | number, currentPrice: string | number) => {
+    if(typeof openPrice === 'string') {
+        openPrice = parseFloat(openPrice)
+    }
+    if(typeof currentPrice === 'string') {
+        currentPrice = parseFloat(currentPrice)
+    }
+    const rawPercent = (currentPrice - openPrice) /  openPrice
+    return numeral(rawPercent).format('0.00%')
+}
