@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import './App.css';
 
 import WatchList from './components/WatchList'
@@ -95,6 +95,11 @@ const App = () => {
     setTimeframe(newTimeframe)
   }
 
+  const logout = () => {
+    localStorage.clear();
+    setUser(null);
+  };
+
   return (
     <BrowserRouter>
       <div className="App">
@@ -102,11 +107,22 @@ const App = () => {
         selectedTradingPair={selectedTradingPair} 
         allTradingPairs={allTradingPairs} 
         setSelectedTradingPair={setSelectedTradingPair}
+        logout={logout}
         user={user}
         setUser={setUser}
         />
         <Routes>
-          <Route path='/' element={<Home price={price} timeframe={timeframe} historicalData={historicalData} handleTimeframeSelect={handleTimeframeSelect} />}/>
+          <Route path='/' element={
+            <Home 
+              price={price} 
+              timeframe={timeframe} 
+              historicalData={historicalData} 
+              handleTimeframeSelect={handleTimeframeSelect} 
+              logout={logout}
+              user={user}
+              setUser={setUser}
+              selectedTradingPair={selectedTradingPair}
+              />}/>
           <Route path='/auth' element={<Auth setUser={setUser}/>}/>
           <Route path='/watchlist' element={<WatchList list={user ? user.watchList : null} />}/>
         </Routes>

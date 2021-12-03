@@ -27,6 +27,7 @@ interface NavBarProps {
   setSelectedTradingPair: (arg: string) => void;
   user: User | null;
   setUser: (arg: User | null) => void;
+  logout: () => void
 }
 const NavBar: React.FC<NavBarProps> = ({
   allTradingPairs,
@@ -34,6 +35,7 @@ const NavBar: React.FC<NavBarProps> = ({
   setSelectedTradingPair,
   user,
   setUser,
+  logout
 }) => {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -60,12 +62,12 @@ const NavBar: React.FC<NavBarProps> = ({
     if (token) {
       type myJwtPayload = JwtPayload & { id: string };
       const decodedToken: myJwtPayload = decode(token);
-      console.log(decodedToken);
 
       if (decodedToken.exp !== undefined) {
         if (decodedToken.exp * 1000 < new Date().getTime()) {
           console.log("expired token");
           logout();
+          navigate('/auth')
         } else {
           const fetchUser = async () => {
             const configObj = {
@@ -85,12 +87,6 @@ const NavBar: React.FC<NavBarProps> = ({
     }
   }, [token]);
 
-  const logout = () => {
-    localStorage.clear();
-    navigate("/auth");
-    setUser(null);
-  };
-
   const deleteUser = async () => {
     const configObj = {
       method: 'DELETE',
@@ -105,8 +101,7 @@ const NavBar: React.FC<NavBarProps> = ({
       const data = await res.json();
       console.log(data, token)
     }
-    localStorage.clear();
-    setUser(null)
+    logout()
     navigate('/')
   }
 
@@ -228,6 +223,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   <MenuItem
                     onClick={() => {
                       logout();
+                      navigate('/auth')
                       handleCloseUserMenu();
                     }}
                   >
