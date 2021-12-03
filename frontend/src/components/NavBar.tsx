@@ -24,7 +24,7 @@ import { Pair, User } from "../types";
 interface NavBarProps {
   allTradingPairs: Pair[];
   selectedTradingPair: string;
-  setSelectedTradingPair: (arg: string) => void;
+  handleTradingPairSelect: (e: any, newValue: Pair | null) => void;
   user: User | null;
   setUser: (arg: User | null) => void;
   logout: () => void
@@ -32,7 +32,7 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = ({
   allTradingPairs,
   selectedTradingPair,
-  setSelectedTradingPair,
+  handleTradingPairSelect,
   user,
   setUser,
   logout
@@ -177,9 +177,7 @@ const NavBar: React.FC<NavBarProps> = ({
               options={allTradingPairs}
               getOptionLabel={(option) => option.display_name}
               onChange={(e: any, newValue: Pair | null) => {
-                if (newValue) {
-                  setSelectedTradingPair(newValue?.id);
-                }
+                handleTradingPairSelect(e, newValue);
               }}
               id="cryptocurrency-options"
               autoHighlight

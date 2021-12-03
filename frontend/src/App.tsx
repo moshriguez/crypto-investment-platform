@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css';
 
 import WatchList from './components/WatchList'
@@ -67,6 +67,7 @@ const App = () => {
   }
   
   useEffect(() => {
+    // this runs everytime selectedTradingPair changes
     if(selectedTradingPair === '') return
     // subscribe to Coinbase via web socket
     const subscribe = {
@@ -95,6 +96,16 @@ const App = () => {
     setTimeframe(newTimeframe)
   }
 
+  const handleTradingPairSelect = (e: any, newValue: Pair | null) => {
+    const unsubscribe = {
+      type: 'unsubscribe',
+      product_ids: [selectedTradingPair],
+      channels: ['ticker']
+    }
+    if(ws.current) ws.current.send(JSON.stringify(unsubscribe))
+    if(newValue) setSelectedTradingPair(newValue.id)
+  }
+
   const logout = () => {
     localStorage.clear();
     setUser(null);
@@ -106,7 +117,7 @@ const App = () => {
         <NavBar 
         selectedTradingPair={selectedTradingPair} 
         allTradingPairs={allTradingPairs} 
-        setSelectedTradingPair={setSelectedTradingPair}
+        handleTradingPairSelect={handleTradingPairSelect}
         logout={logout}
         user={user}
         setUser={setUser}
