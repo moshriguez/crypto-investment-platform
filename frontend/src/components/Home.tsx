@@ -15,6 +15,7 @@ import { HistoricalData, Timeframe, User } from '../types'
 
 interface HomeProps {
   price: string
+  cryptoName: string
   timeframe: Timeframe
   historicalData: HistoricalData[]
   handleTimeframeSelect: (e: React.MouseEvent<HTMLElement, MouseEvent>, newTimeframe: Timeframe) => void
@@ -24,7 +25,7 @@ interface HomeProps {
   selectedTradingPair: string
 }
 
-const Home: React.FC<HomeProps> = ({ handleTimeframeSelect, historicalData, logout, price, selectedTradingPair, timeframe, user, setUser }) => {
+const Home: React.FC<HomeProps> = ({ cryptoName, handleTimeframeSelect, historicalData, logout, price, selectedTradingPair, timeframe, user, setUser }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("jwt");
 
@@ -80,6 +81,7 @@ const Home: React.FC<HomeProps> = ({ handleTimeframeSelect, historicalData, logo
         <ToggleButton value='3M' aria-label='3 months'>3M</ToggleButton>
         {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
       </ToggleButtonGroup>
+      <p>{cryptoName}</p>
       <p>{price}</p>
       {user && (
         <IconButton aria-label='Remove from Watch List' onClick={toggleWatchList}>

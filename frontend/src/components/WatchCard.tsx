@@ -15,6 +15,7 @@ interface WatchCardProps {
 }
 const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
     const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
+    const [cryptoName, setCryptoName] = useState('')
     const [confirmOpen, setConfirmOpen] = useState(false)
     const [cardWidth, setCardWidth] = useState(0)
     const ref = useRef<HTMLDivElement>(null)
@@ -46,14 +47,21 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
             const data: Candle[] = await res.json()
             // console.log(data)
             const formattedData: HistoricalData[] = data.map(c => {
-            return {
-                date: new Date(c[0] * 1000),
-                price: c[4]
-            }
+                return {
+                    date: new Date(c[0] * 1000),
+                    price: c[4]
+                }
             })
             setHistoricalData(formattedData)
         }
+        const fetchCryptoName = async () => {
+            const res = await fetch(`${url}/currencies/${abbv}`)
+            const data = await res.json()
+            setCryptoName(data.name)
+        }
+        
         fetchHistoricalData()
+        fetchCryptoName()
         // get card Width to pass to graph
         if(ref.current) {
             setCardWidth(ref.current.clientWidth)
@@ -75,6 +83,8 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                             <FavoriteIcon sx={{ color: red[500]}} />
                         </IconButton>
                     }
+                    title={cryptoName}
+                    subheader={historicalData[0]?.price}
                 />
                 <CardContent>
                     <MainGraph 

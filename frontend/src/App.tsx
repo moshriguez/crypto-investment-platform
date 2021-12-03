@@ -15,6 +15,7 @@ const App = () => {
   const [allTradingPairs, setAllTradingPairs] = useState<Pair[]>([])
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
+  const [cryptoName, setCryptoName] = useState('')
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
   const [user, setUser] = useState<User | null>(null)
@@ -65,6 +66,13 @@ const App = () => {
     })
     setHistoricalData(formattedData)
   }
+
+  const fetchCryptoName = async () => {
+    const currCode = selectedTradingPair.split('-')[0]
+    const res = await fetch(`${url}/currencies/${currCode}`)
+    const data = await res.json()
+    setCryptoName(data.name)
+  }
   
   useEffect(() => {
     // this runs everytime selectedTradingPair changes
@@ -84,6 +92,7 @@ const App = () => {
     }
 
     fetchHistoricalData()
+    fetchCryptoName()
   }, [selectedTradingPair])
 
   useEffect(() => {
@@ -126,6 +135,7 @@ const App = () => {
           <Route path='/' element={
             <Home 
               price={price} 
+              cryptoName={cryptoName}
               timeframe={timeframe} 
               historicalData={historicalData} 
               handleTimeframeSelect={handleTimeframeSelect} 
