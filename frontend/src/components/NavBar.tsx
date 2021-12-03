@@ -112,7 +112,8 @@ const NavBar: React.FC<NavBarProps> = ({
           <Typography
             variant="h6"
             noWrap
-            component="div"
+            component={Link} 
+            to="/"
             sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
           >
             CRYPTO
@@ -149,7 +150,7 @@ const NavBar: React.FC<NavBarProps> = ({
             >
               {user ? (
                 <MenuItem onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Watch List</Typography>
+                  <Typography component={Link} to="/watchlist" textAlign="center">Watch List</Typography>
                 </MenuItem>
               ) : null}
             </Menu>
@@ -157,7 +158,8 @@ const NavBar: React.FC<NavBarProps> = ({
           <Typography
             variant="h6"
             noWrap
-            component="div"
+            component={Link} 
+            to="/"
             sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
           >
             CRYPTO
@@ -165,6 +167,8 @@ const NavBar: React.FC<NavBarProps> = ({
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {user ? (
               <Button
+                component={Link}
+                to="/watchlist"
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
