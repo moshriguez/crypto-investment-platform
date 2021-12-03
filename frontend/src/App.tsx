@@ -135,7 +135,12 @@ const App = () => {
               selectedTradingPair={selectedTradingPair}
               />}/>
           <Route path='/auth' element={<Auth setUser={setUser}/>}/>
-          <Route path='/watchlist' element={<WatchList list={user ? user.watchList : null} />}/>
+          <Route path='/watchlist' element={
+            <WatchList 
+              list={user ? user.watchList : null} 
+              logout={logout}
+              setUser={setUser}
+            />}/>
         </Routes>
       </div>
     </BrowserRouter>

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
-import { Avatar, Card, CardContent, CardHeader, Grid, IconButton } from '@mui/material'
+import { Avatar, Button, Card, CardContent, CardHeader, Dialog, DialogActions, DialogContent, DialogContentText, Grid, IconButton } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
@@ -11,15 +11,29 @@ import { Candle, HistoricalData } from '../types'
 
 interface WatchCardProps {
     pair: string
+    removeFromWatchList: (arg: string) => void
 }
-const WatchCard: React.FC<WatchCardProps> = ({ pair }) => {
+const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
     const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
+    const [confirmOpen, setConfirmOpen] = useState(false)
     const [cardWidth, setCardWidth] = useState(0)
-    console.log(cardWidth)
     const ref = useRef<HTMLDivElement>(null)
 
     const abbv = pair.split('-')[0]
     const url = 'https://api.pro.coinbase.com'
+
+    const handleOpenConfirm = () => {
+        setConfirmOpen(true)
+    }
+
+    const handleCloseConfirm = () => {
+        setConfirmOpen(false)
+    }
+
+    const confirmRemove = () => {
+        removeFromWatchList(pair)
+        handleCloseConfirm()
+    }
 
     useEffect(() => {
           // get historical data for chart
@@ -44,9 +58,10 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair }) => {
         if(ref.current) {
             setCardWidth(ref.current.clientWidth)
         }
-    }, [])
+    }, [pair])
 
     return (
+        <>
         <Grid item xs={12} sm={6} md={4} ref={ref}>
             <Card>
                 <CardHeader
@@ -56,8 +71,8 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair }) => {
                         }</Avatar>
                     }
                     action={
-                        <IconButton aria-label='Remove from Watch List'>
-                            <FavoriteIcon />
+                        <IconButton aria-label='Remove from Watch List' onClick={handleOpenConfirm}>
+                            <FavoriteIcon sx={{ color: red[500]}} />
                         </IconButton>
                     }
                 />
@@ -79,6 +94,16 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair }) => {
                 </CardContent>
             </Card>
         </Grid>
+        <Dialog open={confirmOpen} onClose={handleCloseConfirm} aria-describedby="alert-dialog-description">
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">{`Are you sure you want to quit following ${abbv}?`}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={confirmRemove} >Yes</Button>
+                <Button onClick={handleCloseConfirm} >Cancel</Button>
+            </DialogActions>
+        </Dialog>
+        </>
     )
 }
 
