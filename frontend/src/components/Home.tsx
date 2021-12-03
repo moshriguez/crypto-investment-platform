@@ -34,7 +34,6 @@ const Home: React.FC<HomeProps> = ({ handleTimeframeSelect, historicalData, logo
       const body = {
         watchList: updatedList
       }
-      console.log(body)
       const configObj = {
         method: 'PATCH',
         headers: {
@@ -43,9 +42,9 @@ const Home: React.FC<HomeProps> = ({ handleTimeframeSelect, historicalData, logo
         },
         body: JSON.stringify(body)
       }
-      // const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
-      // const data = res.json()
-      // console.log(data)
+      const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
+      const data = await res.json()
+      setUser(data.user)
     }
   }
 
