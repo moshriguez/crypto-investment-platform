@@ -4,7 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
 import MainGraph from './MainGraph';
-import { calcStartDate } from '../utils'
+import { calcStartDate, currencyFormatter } from '../utils'
 // Types
 import { Candle, HistoricalData } from '../types'
 
@@ -84,7 +84,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                         </IconButton>
                     }
                     title={cryptoName}
-                    subheader={historicalData[0]?.price}
+                    subheader={currencyFormatter(historicalData[0]?.price)}
                 />
                 <CardContent>
                     <MainGraph 

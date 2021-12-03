@@ -2,6 +2,8 @@ import React from 'react'
 import { LinePath } from '@visx/shape'
 import { Group } from '@visx/group'
 import { AxisLeft, AxisBottom, AxisScale } from '@visx/axis'
+import numeral from 'numeral'
+
 import { HistoricalData } from '../types'
 
 interface LineGraphProps {
@@ -63,6 +65,9 @@ const LineGraph: React.FC<LineGraphProps> = ({data, xScale, yScale, width, yMax,
                             textAnchor: "end" as const,
                             fill: '#000',
                         }}}
+                    tickFormat={(n) => {
+                        return numeral(n).format(n <= 100 ? '$0.00' : '$0,0')
+                    }}
                 />
             )}
         </Group>

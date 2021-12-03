@@ -6,9 +6,8 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import { red } from '@mui/material/colors';
 import decode, { JwtPayload } from "jwt-decode";
 
-
-
 import MainGraph from './MainGraph';
+import { currencyFormatter } from '../utils'
 // Types
 import { HistoricalData, Timeframe, User } from '../types'
 
@@ -82,7 +81,7 @@ const Home: React.FC<HomeProps> = ({ cryptoName, handleTimeframeSelect, historic
         {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
       </ToggleButtonGroup>
       <p>{cryptoName}</p>
-      <p>{price}</p>
+      <p>{currencyFormatter(parseFloat(price))}</p>
       {user && (
         <IconButton aria-label='Remove from Watch List' onClick={toggleWatchList}>
           {user.watchList.includes(selectedTradingPair) ? 

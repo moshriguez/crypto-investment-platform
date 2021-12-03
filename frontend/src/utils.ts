@@ -1,4 +1,7 @@
+import numeral from 'numeral'
+
 import { HistoricalData, Timeframe } from "./types";
+
 
 export const findMinPrice = (arr: HistoricalData[]) => {
     let min = Infinity
@@ -29,4 +32,8 @@ export const calcStartDate = (now: Date, timeframe: Timeframe) => {
     }
     const temp = now.valueOf() - timeMapper[timeframe]
     return new Date(temp)
+}
+
+export const currencyFormatter = (n: number) => {
+    return numeral(n).format('$0,0.00')
 }
