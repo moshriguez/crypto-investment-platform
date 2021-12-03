@@ -53,7 +53,7 @@ const WatchList: React.FC<WatchListProps> = ({ list, logout, setUser }) => {
     }
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{p: 2.5}}>
             {list?.map((pair, i) => {
                 return <WatchCard key={i} pair={pair} removeFromWatchList={removeFromWatchList}/>
             })}

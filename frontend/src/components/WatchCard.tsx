@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react'
-import { Avatar, Button, Card, CardContent, CardHeader, Dialog, DialogActions, DialogContent, DialogContentText, Grid, IconButton } from '@mui/material'
+import { Avatar, Box, Button, Card, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, Grid, IconButton, Typography } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
 import MainGraph from './MainGraph';
-import { calcStartDate, currencyFormatter } from '../utils'
+import { calcPercentChange, calcStartDate, currencyFormatter } from '../utils'
 // Types
 import { Candle, HistoricalData } from '../types'
 
@@ -16,6 +16,7 @@ interface WatchCardProps {
 const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
     const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
     const [cryptoName, setCryptoName] = useState('')
+    const [percentChange, setPercentChange] = useState('')
     const [confirmOpen, setConfirmOpen] = useState(false)
     const [cardWidth, setCardWidth] = useState(0)
     const ref = useRef<HTMLDivElement>(null)
@@ -45,6 +46,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
             // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
             // Candle array arranged from end to start
             const data: Candle[] = await res.json()
+            setPercentChange(calcPercentChange(data[data.length - 1][3] , data[0][4]))
             // console.log(data)
             const formattedData: HistoricalData[] = data.map(c => {
                 return {
@@ -68,13 +70,26 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
         }
     }, [pair])
 
+    const avatarFontSize = (length: number) => {
+        switch (length) {
+            case 3:
+                return 18
+            case 4:
+                return 14
+            case 5:
+                return 12
+            default:
+                return 18;
+        }
+    }
+
     return (
         <>
         <Grid item xs={12} sm={6} md={4} ref={ref}>
             <Card>
                 <CardHeader
                     avatar={
-                        <Avatar sx={{ bgcolor: red[500]}}>{
+                        <Avatar sx={{ bgcolor: red[500], fontSize: avatarFontSize(abbv.length)}}>{
                             abbv
                         }</Avatar>
                     }
@@ -84,7 +99,18 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                         </IconButton>
                     }
                     title={cryptoName}
-                    subheader={currencyFormatter(historicalData[0]?.price)}
+                    titleTypographyProps={{variant: 'h6'}}
+                    subheader={
+                        <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                            <Typography>{currencyFormatter(historicalData[0]?.price)}</Typography>
+                            <Chip 
+                                label={percentChange} 
+                                variant='outlined' 
+                                color={percentChange[0] === '-' ? 'error' : 'success'} 
+                                size='small'
+                            />
+                        </Box>
+                    }
                 />
                 <CardContent>
                     <MainGraph 
