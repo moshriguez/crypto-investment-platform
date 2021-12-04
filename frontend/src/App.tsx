@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import './App.css';
 
+import Currency from './components/Currency'
 import WatchList from './components/WatchList'
 import NavBar from './components/NavBar'
 import Auth from './components/Auth'
@@ -12,7 +13,7 @@ import { calcPercentChange, calcStartDate } from './utils'
 import { Candle, Digest, HistoricalData, Pair, Timeframe, User } from './types'
 
 const App = () => {
-  const [allTradingPairs, setAllTradingPairs] = useState<Pair[]>([])
+  const navigate = useNavigate()
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
   const [cryptoName, setCryptoName] = useState('')
@@ -27,20 +28,6 @@ const App = () => {
 
   useEffect(() => {
     ws.current = new WebSocket('wss://ws-feed.exchange.coinbase.com')
-    const fetchAllTradingPairs = async () => {
-      const res = await fetch(url + '/products')
-      const data: Pair[] = await res.json()
-      const filteredAndSorted = data.filter(item => item.quote_currency === 'USD' && !item.trading_disabled)
-        .sort((a, b) => {
-          if (a.base_currency > b.base_currency) return 1
-          if (a.base_currency < b.base_currency) return -1
-          else return 0
-        })
-      setAllTradingPairs(filteredAndSorted)
-    }
-    fetchAllTradingPairs()
-
-    return () => {if(ws.current) ws.current.close()}
   }, [])
 
   // get historical data for chart
@@ -116,6 +103,7 @@ const App = () => {
     }
     if(ws.current) ws.current.send(JSON.stringify(unsubscribe))
     if(newValue) setSelectedTradingPair(newValue.id)
+    navigate('currency')
   }
 
   const logout = () => {
@@ -124,19 +112,18 @@ const App = () => {
   };
 
   return (
-    <BrowserRouter>
       <div className="App">
         <NavBar 
         selectedTradingPair={selectedTradingPair} 
-        allTradingPairs={allTradingPairs} 
         handleTradingPairSelect={handleTradingPairSelect}
         logout={logout}
         user={user}
         setUser={setUser}
         />
         <Routes>
-          <Route path='/' element={
-            <Home 
+          <Route path='/' element={<Home handleTradingPairSelect={handleTradingPairSelect} />} />
+          <Route path='/currency' element={
+            <Currency 
               price={price} 
               cryptoName={cryptoName}
               percentChange={percentChange}
@@ -157,7 +144,6 @@ const App = () => {
             />}/>
         </Routes>
       </div>
-    </BrowserRouter>
   );
 }
 
