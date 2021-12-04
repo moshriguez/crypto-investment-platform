@@ -1,4 +1,5 @@
 import numeral from 'numeral'
+import { format } from 'date-fns'
 
 import { HistoricalData, Timeframe } from "./types";
 
@@ -47,4 +48,12 @@ export const calcPercentChange = (openPrice: string | number, currentPrice: stri
     }
     const rawPercent = (currentPrice - openPrice) /  openPrice
     return numeral(rawPercent).format('0.00%')
+}
+
+export const formatDate = (date: Date, timeframe: Timeframe) => {
+    if(timeframe === '3M') {
+        return format(date, 'PP')
+    } else {
+        return format(date, 'PPpp')
+    }
 }
