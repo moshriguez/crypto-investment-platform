@@ -123,8 +123,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                         bottom: 16,
                         left: 4
                         }}
-                        hideBottomAxis
-                        hideLeftAxis
+                        hideAxis
                         border
                     />
                 </CardContent>

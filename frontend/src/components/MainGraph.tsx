@@ -4,10 +4,8 @@ import { grey } from '@mui/material/colors'
 import { scaleLinear, scaleTime } from '@visx/scale'
 import { LinePath } from '@visx/shape'
 import { Group } from '@visx/group'
-import { AxisLeft, AxisBottom } from '@visx/axis'
-import numeral from 'numeral'
 
-
+import Axis from './Axis'
 import { findMinPrice, findMaxPrice } from '../utils'
 import { HistoricalData } from '../types'
 
@@ -16,12 +14,11 @@ interface MainGraphProps {
     width: number
     height: number
     margin: { top: number, right: number, bottom: number, left: number }
-    hideBottomAxis?: boolean
-    hideLeftAxis?: boolean
+    hideAxis?: boolean
     border?: boolean
 }
 
-const MainGraph: React.FC<MainGraphProps> = ({border, data, width, height, margin, hideBottomAxis, hideLeftAxis}) => {
+const MainGraph: React.FC<MainGraphProps> = ({border, children, data, width, height, margin, hideAxis}) => {
 
     // accessors
     const getDate = (d: HistoricalData) => d.date
@@ -57,42 +54,16 @@ const MainGraph: React.FC<MainGraphProps> = ({border, data, width, height, margi
                         strokeWidth={1.25}
                         stroke={'#000'}
                     />
-                    {!hideBottomAxis && (
-                        <AxisBottom 
-                            top={yMax + margin.top}
-                            scale={dateScale}
-                            numTicks={width > 500 ? 10 : 5}
-                            stroke={'#000'}
-                            tickStroke={'#000'}
-                            tickLabelProps={() => {
-                                return {
-                                    textAnchor: 'middle',
-                                    fontFamily: 'Roboto',
-                                    fontSize: 10,
-                                    fill: '#000'
-                                }}}
+                    {!hideAxis && (
+                        <Axis 
+                            xScale={dateScale}
+                            yScale={priceScale}
+                            width={width}
+                            yMax={yMax}
+                            margin={margin}
                         />
                     )}
-                    {!hideLeftAxis && (
-                        <AxisLeft 
-                            scale={priceScale}
-                            numTicks={5}
-                            stroke={'#000'}
-                            tickStroke={'#000'}
-                            tickLabelProps={() => {
-                                return {
-                                    dx: '-0.25em',
-                                    dy: '0.25em',
-                                    fontFamily: 'Roboto',
-                                    fontSize: 10,
-                                    textAnchor: 'end',
-                                    fill: '#000'
-                                }}}
-                            tickFormat={(n) => {
-                                return numeral(n).format(n <= 100 ? '$0.00' : '$0,0')
-                            }}
-                        />
-                    )}
+                    {children}
                 </Group>
             </svg>
         </Box>
