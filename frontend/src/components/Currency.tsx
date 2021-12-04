@@ -58,10 +58,11 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 		}
 	}, [selectedTradingPair])
   
+
   useEffect(() => {
     if(selectedTradingPair === '') return
     fetchCryptoName(selectedTradingPair, setCryptoName)
-    fetchHistoricalData(selectedTradingPair, timeframe, setHistoricalData)
+    fetchHistoricalData(selectedTradingPair, setHistoricalData, timeframe)
   }, [timeframe, selectedTradingPair])
 
   const toggleWatchList = async () => {

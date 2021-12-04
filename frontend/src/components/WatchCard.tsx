@@ -4,9 +4,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
 import MainGraph from './MainGraph';
-import { calcPercentChange, calcStartDate, currencyFormatter, fetchCryptoName } from '../utils'
+import { currencyFormatter, fetchCryptoName, fetchHistoricalData } from '../utils'
 // Types
-import { Candle, HistoricalData } from '../types'
+import { HistoricalData } from '../types'
 
 
 interface WatchCardProps {
@@ -22,7 +22,6 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
     const ref = useRef<HTMLDivElement>(null)
 
     const abbv = pair.split('-')[0]
-    const url = 'https://api.pro.coinbase.com'
 
     const handleOpenConfirm = () => {
         setConfirmOpen(true)
@@ -38,26 +37,8 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
     }
 
     useEffect(() => {
-          // get historical data for chart
-        const fetchHistoricalData = async () => {
-            let now = new Date()
-            let startDate = calcStartDate(now, '1D')
-            const res = await fetch(`${url}/products/${pair}/candles?granularity=300&start=${startDate.toISOString()}&end=${now.toISOString()}`)
-            // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
-            // Candle array arranged from end to start
-            const data: Candle[] = await res.json()
-            setPercentChange(calcPercentChange(data[data.length - 1][3] , data[0][4]))
-            // console.log(data)
-            const formattedData: HistoricalData[] = data.map(c => {
-                return {
-                    date: new Date(c[0] * 1000),
-                    price: c[4]
-                }
-            })
-            setHistoricalData(formattedData)
-        }
-        
-        fetchHistoricalData()
+        // get historical data and Crypto name for chart
+        fetchHistoricalData(pair, setHistoricalData, undefined, setPercentChange)
         fetchCryptoName(pair, setCryptoName)
         // get card Width to pass to graph
         if(ref.current) {

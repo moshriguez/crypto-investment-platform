@@ -69,7 +69,7 @@ export const fetchCryptoName = async (pair: string, setCryptoName: (arg: string)
     setCryptoName(data.name)
   }
 
-export const fetchHistoricalData = async (pair: string, timeframe: Timeframe, setHistoricalData: (arr: HistoricalData[]) => void) => {
+export const fetchHistoricalData = async (pair: string, setHistoricalData: (arr: HistoricalData[]) => void, timeframe: Timeframe = '1D', setPercentChange?: (arg: string) => void) => {
     let granularity = {
       '1D': 300,
       '7D': 3600,
@@ -81,8 +81,11 @@ export const fetchHistoricalData = async (pair: string, timeframe: Timeframe, se
     let startDate = calcStartDate(now, timeframe)
     const res = await fetch(`${url}/products/${pair}/candles?granularity=${granularity[timeframe]}&start=${startDate.toISOString()}&end=${now.toISOString()}`)
     // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
-    // Candle array arranged from end to start
+    //! Candle array arranged from end to start
     const data: Candle[] = await res.json()
+    if(setPercentChange) {
+        setPercentChange(calcPercentChange(data[data.length - 1][3] , data[0][4]))
+    }
     // console.log(data)
     const formattedData: HistoricalData[] = data.map(c => {
       return {
