@@ -90,18 +90,20 @@ const Home: React.FC<HomeProps> = ({ cryptoName, handleTimeframeSelect, historic
           <FavoriteIcon sx={{ color: red[500]}}/> : <FavoriteBorderOutlinedIcon />}
         </IconButton>
       )}
-
-      <MainGraph 
-        data={historicalData}
-        height={500}
-        width={750}
-        margin={{
-          top: 16,
-          right: 16,
-          bottom: 40,
-          left: 48
-        }}
-      />
+      {selectedTradingPair && (
+        <MainGraph 
+          data={historicalData}
+          height={500}
+          width={750}
+          margin={{
+            top: 16,
+            right: 16,
+            bottom: 40,
+            left: 48
+          }}
+          timeframe={timeframe}
+        />
+      )}
 
       </>
   )

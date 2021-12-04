@@ -125,6 +125,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                         }}
                         hideAxis
                         border
+                        withoutTooltip
                     />
                 </CardContent>
             </Card>
