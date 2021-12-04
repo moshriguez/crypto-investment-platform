@@ -115,7 +115,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                 <CardContent>
                     <MainGraph 
                         data={historicalData}
-                        height={120}
+                        height={Math.floor(cardWidth * 0.85 * (2/3))}
                         width={Math.floor(cardWidth * 0.85)}
                         margin={{
                         top: 16,

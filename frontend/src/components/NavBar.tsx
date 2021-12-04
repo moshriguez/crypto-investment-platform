@@ -97,6 +97,16 @@ const NavBar: React.FC<NavBarProps> = ({
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+        <Typography
+            variant="h6"
+            noWrap
+            component={Link} 
+            to="/"
+            sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}
+          >
+            CRYPTO
+          </Typography>
+
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}>
             {user ? (
               <Button
@@ -108,15 +118,6 @@ const NavBar: React.FC<NavBarProps> = ({
               </Button>
             ) : null}
           </Box>
-          <Typography
-            variant="h6"
-            noWrap
-            component={Link} 
-            to="/"
-            sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}
-          >
-            CRYPTO
-          </Typography>
           <Box sx={{display: { xs: 'none', sm: 'flex'}}}>
             {location.pathname !== '/' && (
               <AutoDropdown handleTradingPairSelect={handleTradingPairSelect}/>

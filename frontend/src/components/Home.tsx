@@ -16,7 +16,7 @@ const Home: React.FC<HomeProps> = ({ handleTradingPairSelect }) => {
 
 
   return (
-      <Box sx={{display: 'flex', justifyContent: 'center'}}>
+      <Box sx={{display: 'flex', justifyContent: 'center', pt: 10}}>
         <AutoDropdown handleTradingPairSelect={handleTradingPairSelect}/>
       </Box>
   )
