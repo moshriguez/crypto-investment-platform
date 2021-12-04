@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useRef } from 'react'
+import React, {useEffect, useLayoutEffect, useState, useRef } from 'react'
 import { useNavigate } from "react-router-dom";
 import { Chip, Container, IconButton, Stack, ToggleButtonGroup, ToggleButton, Typography } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
@@ -7,36 +7,62 @@ import { red } from '@mui/material/colors';
 import decode, { JwtPayload } from "jwt-decode";
 
 import MainGraph from './MainGraph';
-import { currencyFormatter, fetchCryptoName } from '../utils'
+import { calcPercentChange, currencyFormatter, fetchCryptoName, fetchHistoricalData } from '../utils'
 // Types
-import { HistoricalData, Timeframe, User } from '../types'
+import { Digest, HistoricalData, Timeframe, User } from '../types'
 
 interface CurrencyProps {
-  price: string
-  percentChange: string
-  timeframe: Timeframe
-  historicalData: HistoricalData[]
-  handleTimeframeSelect: (e: React.MouseEvent<HTMLElement, MouseEvent>, newTimeframe: Timeframe) => void
   logout: () => void
   user: User | null
   setUser: (arg: User | null) => void
   selectedTradingPair: string
+  ws: React.MutableRefObject<WebSocket | null>
+  wsUnsub: () => void
 }
 
-const Currency: React.FC<CurrencyProps> = ({ handleTimeframeSelect, historicalData, logout, percentChange, price, selectedTradingPair, timeframe, user, setUser }) => {
+const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, setUser, ws, wsUnsub }) => {
 	const [graphWidth, setGraphWidth] = useState(0)
   const [cryptoName, setCryptoName] = useState('')
+  const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
+  const [timeframe, setTimeframe] = useState<Timeframe>('1D')
+  const [price, setPrice] = useState('')
+  const [percentChange, setPercentChange] = useState('')
 
   const navigate = useNavigate();
 	const ref = useRef<HTMLDivElement>(null)
   const token = localStorage.getItem("jwt");
 
+  useEffect(() => {
+    // this runs everytime selectedTradingPair changes
+    if(selectedTradingPair === '') return
+    // subscribe to Coinbase via web socket
+    const subscribe = {
+      type: 'subscribe',
+      product_ids: [selectedTradingPair],
+      channels: ['ticker']
+    }
+    if (ws.current) {
+      ws.current.send(JSON.stringify(subscribe))
+      ws.current.onmessage = (e) => {
+        const res: Digest = JSON.parse(e.data)
+        setPrice(res.price)
+        setPercentChange(calcPercentChange(res.open_24h, res.price))
+      }
+    }    
+    return () => {wsUnsub()}
+  }, [selectedTradingPair, ws, wsUnsub])
+
 	useLayoutEffect(() => {
 		if (ref.current) {
 			setGraphWidth(ref.current.clientWidth)
 		}
+	}, [selectedTradingPair])
+  
+  useEffect(() => {
+    if(selectedTradingPair === '') return
     fetchCryptoName(selectedTradingPair, setCryptoName)
-	}, [])
+    fetchHistoricalData(selectedTradingPair, timeframe, setHistoricalData)
+  }, [timeframe, selectedTradingPair])
 
   const toggleWatchList = async () => {
     if (token) {
@@ -75,6 +101,11 @@ const Currency: React.FC<CurrencyProps> = ({ handleTimeframeSelect, historicalDa
       }
     }
   }
+
+  const handleTimeframeSelect = (e: React.MouseEvent<HTMLElement, MouseEvent>, newTimeframe: Timeframe) => {
+    setTimeframe(newTimeframe)
+  }
+
   return (
     <Container 
 			maxWidth='md' 

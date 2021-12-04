@@ -1,10 +1,11 @@
 import numeral from 'numeral'
 import { format } from 'date-fns'
 
-import { HistoricalData, Timeframe } from "./types";
+import { Candle, HistoricalData, Timeframe } from "./types";
 
 const url = 'https://api.pro.coinbase.com'
 
+// Calculation Helpers
 export const findMinPrice = (arr: HistoricalData[]) => {
     let min = Infinity
     arr.forEach(e => {
@@ -36,10 +37,6 @@ export const calcStartDate = (now: Date, timeframe: Timeframe) => {
     return new Date(temp)
 }
 
-export const currencyFormatter = (n: number) => {
-    return numeral(n).format('$0,0.00')
-}
-
 export const calcPercentChange = (openPrice: string | number, currentPrice: string | number) => {
     if(typeof openPrice === 'string') {
         openPrice = parseFloat(openPrice)
@@ -51,6 +48,11 @@ export const calcPercentChange = (openPrice: string | number, currentPrice: stri
     return numeral(rawPercent).format('0.00%')
 }
 
+// Formatters
+export const currencyFormatter = (n: number) => {
+    return numeral(n).format('$0,0.00')
+}
+
 export const formatDate = (date: Date, timeframe: Timeframe) => {
     if(timeframe === '3M') {
         return format(date, 'PP')
@@ -59,9 +61,35 @@ export const formatDate = (date: Date, timeframe: Timeframe) => {
     }
 }
 
+// API calls
 export const fetchCryptoName = async (pair: string, setCryptoName: (arg: string)=>void ) => {
     const currCode = pair.split('-')[0]
     const res = await fetch(`${url}/currencies/${currCode}`)
     const data = await res.json()
     setCryptoName(data.name)
   }
+
+export const fetchHistoricalData = async (pair: string, timeframe: Timeframe, setHistoricalData: (arr: HistoricalData[]) => void) => {
+    let granularity = {
+      '1D': 300,
+      '7D': 3600,
+      '1M': 21600,
+      '3M': 86400,
+      '1Y': 86400
+    }
+    let now = new Date()
+    let startDate = calcStartDate(now, timeframe)
+    const res = await fetch(`${url}/products/${pair}/candles?granularity=${granularity[timeframe]}&start=${startDate.toISOString()}&end=${now.toISOString()}`)
+    // Candle schema: [timestamp, price_low, price_high, price_open, price_close]
+    // Candle array arranged from end to start
+    const data: Candle[] = await res.json()
+    // console.log(data)
+    const formattedData: HistoricalData[] = data.map(c => {
+      return {
+        date: new Date(c[0] * 1000),
+        price: c[4]
+      }
+    })
+    setHistoricalData(formattedData)
+  }
+
