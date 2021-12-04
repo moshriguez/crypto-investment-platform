@@ -16,7 +16,6 @@ const App = () => {
   const navigate = useNavigate()
   const [selectedTradingPair, setSelectedTradingPair] = useState('')
   const [price, setPrice] = useState('')
-  const [cryptoName, setCryptoName] = useState('')
   const [percentChange, setPercentChange] = useState('')
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
@@ -54,13 +53,6 @@ const App = () => {
     })
     setHistoricalData(formattedData)
   }
-
-  const fetchCryptoName = async () => {
-    const currCode = selectedTradingPair.split('-')[0]
-    const res = await fetch(`${url}/currencies/${currCode}`)
-    const data = await res.json()
-    setCryptoName(data.name)
-  }
   
   useEffect(() => {
     // this runs everytime selectedTradingPair changes
@@ -81,7 +73,6 @@ const App = () => {
     }
 
     fetchHistoricalData()
-    fetchCryptoName()
     
   }, [selectedTradingPair])
 
@@ -125,7 +116,6 @@ const App = () => {
           <Route path='/currency' element={
             <Currency 
               price={price} 
-              cryptoName={cryptoName}
               percentChange={percentChange}
               timeframe={timeframe} 
               historicalData={historicalData} 

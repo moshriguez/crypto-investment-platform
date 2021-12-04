@@ -4,7 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
 import MainGraph from './MainGraph';
-import { calcPercentChange, calcStartDate, currencyFormatter } from '../utils'
+import { calcPercentChange, calcStartDate, currencyFormatter, fetchCryptoName } from '../utils'
 // Types
 import { Candle, HistoricalData } from '../types'
 
@@ -56,14 +56,9 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
             })
             setHistoricalData(formattedData)
         }
-        const fetchCryptoName = async () => {
-            const res = await fetch(`${url}/currencies/${abbv}`)
-            const data = await res.json()
-            setCryptoName(data.name)
-        }
         
         fetchHistoricalData()
-        fetchCryptoName()
+        fetchCryptoName(pair, setCryptoName)
         // get card Width to pass to graph
         if(ref.current) {
             setCardWidth(ref.current.clientWidth)

@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 
 import { HistoricalData, Timeframe } from "./types";
 
+const url = 'https://api.pro.coinbase.com'
 
 export const findMinPrice = (arr: HistoricalData[]) => {
     let min = Infinity
@@ -57,3 +58,10 @@ export const formatDate = (date: Date, timeframe: Timeframe) => {
         return format(date, 'PPpp')
     }
 }
+
+export const fetchCryptoName = async (pair: string, setCryptoName: (arg: string)=>void ) => {
+    const currCode = pair.split('-')[0]
+    const res = await fetch(`${url}/currencies/${currCode}`)
+    const data = await res.json()
+    setCryptoName(data.name)
+  }

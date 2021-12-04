@@ -7,13 +7,12 @@ import { red } from '@mui/material/colors';
 import decode, { JwtPayload } from "jwt-decode";
 
 import MainGraph from './MainGraph';
-import { currencyFormatter } from '../utils'
+import { currencyFormatter, fetchCryptoName } from '../utils'
 // Types
 import { HistoricalData, Timeframe, User } from '../types'
 
 interface CurrencyProps {
   price: string
-  cryptoName: string
   percentChange: string
   timeframe: Timeframe
   historicalData: HistoricalData[]
@@ -24,8 +23,10 @@ interface CurrencyProps {
   selectedTradingPair: string
 }
 
-const Currency: React.FC<CurrencyProps> = ({ cryptoName, handleTimeframeSelect, historicalData, logout, percentChange, price, selectedTradingPair, timeframe, user, setUser }) => {
+const Currency: React.FC<CurrencyProps> = ({ handleTimeframeSelect, historicalData, logout, percentChange, price, selectedTradingPair, timeframe, user, setUser }) => {
 	const [graphWidth, setGraphWidth] = useState(0)
+  const [cryptoName, setCryptoName] = useState('')
+
   const navigate = useNavigate();
 	const ref = useRef<HTMLDivElement>(null)
   const token = localStorage.getItem("jwt");
@@ -34,6 +35,7 @@ const Currency: React.FC<CurrencyProps> = ({ cryptoName, handleTimeframeSelect, 
 		if (ref.current) {
 			setGraphWidth(ref.current.clientWidth)
 		}
+    fetchCryptoName(selectedTradingPair, setCryptoName)
 	}, [])
 
   const toggleWatchList = async () => {
