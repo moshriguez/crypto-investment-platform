@@ -118,7 +118,7 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
         <ConfirmDialog 
             open={confirmOpen}
             handleCloseConfirm={handleCloseConfirm}
-            dialogText={`Are you sure you want to quit following ${abbv}?`}
+            dialogText={`Are you sure you want to quit following ${cryptoName}?`}
             confirmCallback={confirmRemove}
         />
         </>

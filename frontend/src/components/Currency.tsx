@@ -176,7 +176,7 @@ const Currency: React.FC<CurrencyProps> = ({ price, percentChange, logout, selec
     <ConfirmDialog 
       open={confirmOpen}
       handleCloseConfirm={handleCloseConfirm}
-      dialogText={`Are you sure you want to quit following ${abbv}?`}
+      dialogText={`Are you sure you want to quit following ${cryptoName}?`}
       confirmCallback={confirmRemove}
     />
     </>
