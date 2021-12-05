@@ -55,6 +55,10 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                 return 14
             case 5:
                 return 12
+            case 6:
+                return 10
+            case 7:
+                return 9
             default:
                 return 18;
         }
