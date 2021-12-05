@@ -15,6 +15,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 
 import AutoDropdown from './AutoDropdown'
+import ConfirmDialog from './ConfirmDialog';
 import { checkToken, deleteUser, fetchUser } from '../utils'
 // Types
 import { Pair, User } from "../types";
@@ -34,6 +35,7 @@ const NavBar: React.FC<NavBarProps> = ({
 }) => {
   const location = useLocation()
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -43,6 +45,20 @@ const NavBar: React.FC<NavBarProps> = ({
     setAnchorElUser(null);
   };
 
+  const handleOpenConfirm = () => {
+    setConfirmOpen(true)
+  }
+
+  const handleCloseConfirm = () => {
+    setConfirmOpen(false)
+  }
+
+  const confirmDelete = () => {
+    if(user && token) deleteUser(user._id, token)
+    handleCloseConfirm()
+    logout('/')
+  }
+  
   const token = localStorage.getItem("jwt");
   
   useEffect(() => {
@@ -64,8 +80,7 @@ const NavBar: React.FC<NavBarProps> = ({
       let decodedToken = checkToken(token)
 
       if(decodedToken) {
-        if(user) deleteUser(user._id, token)
-        logout('/')
+        handleOpenConfirm()
       } else {
         console.log("expired token");
         logout('/auth');
@@ -74,6 +89,7 @@ const NavBar: React.FC<NavBarProps> = ({
   }
 
   return (
+    <>
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -157,6 +173,13 @@ const NavBar: React.FC<NavBarProps> = ({
         </Toolbar>
       </Container>
     </AppBar>
+    <ConfirmDialog 
+      open={confirmOpen}
+      handleCloseConfirm={handleCloseConfirm}
+      dialogText={'Are you sure you want to delete your account?'}
+      confirmCallback={confirmDelete}
+    />
+    </>
   );
 };
 
