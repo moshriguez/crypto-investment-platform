@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
-import { Avatar, Box, Card, CardContent, CardHeader, Chip, Grid, IconButton, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
+import { Avatar, Box, Card, CardActionArea, CardContent, CardHeader, Chip, Grid, IconButton, Typography } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
@@ -79,8 +80,11 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                             <FavoriteIcon sx={{ color: red[500]}} />
                         </IconButton>
                     }
-                    title={cryptoName}
-                    titleTypographyProps={{variant: 'h6'}}
+                    title={
+                        <CardActionArea component={Link} to={`/currency/${pair}`}>
+                            <Typography variant='h6'>{cryptoName}</Typography>
+                        </CardActionArea>
+                    }
                     subheader={
                         <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
                             <Typography>{currencyFormatter(historicalData[0]?.price)}</Typography>
