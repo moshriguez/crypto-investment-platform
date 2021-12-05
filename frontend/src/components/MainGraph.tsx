@@ -4,7 +4,7 @@ import { grey } from "@mui/material/colors";
 import { scaleLinear, scaleTime } from "@visx/scale";
 import { Bar, Line, LinePath } from "@visx/shape";
 import { Group } from "@visx/group";
-import { useTooltip, TooltipWithBounds, defaultStyles } from "@visx/tooltip";
+import { useTooltip, Tooltip, defaultStyles } from "@visx/tooltip";
 import { localPoint } from "@visx/event";
 import { bisector, extent } from "d3-array";
 
@@ -38,6 +38,7 @@ const MainGraph: React.FC<MainGraphProps> = ({
   timeframe,
   withoutTooltip,
 }) => {
+
   const { showTooltip, hideTooltip, tooltipData, tooltipTop, tooltipLeft } =
     useTooltip<HistoricalData>();
 
@@ -183,7 +184,7 @@ const MainGraph: React.FC<MainGraphProps> = ({
       </svg>
       {!withoutTooltip && tooltipData && (
         <Box sx={{ position: "relative" }}>
-          <TooltipWithBounds
+          <Tooltip
             key={Math.random()}
             applyPositionStyle
             top={tooltipTop ? tooltipTop - yMax - margin.top * 2 : undefined}
@@ -196,7 +197,7 @@ const MainGraph: React.FC<MainGraphProps> = ({
             <Typography>
               {timeframe ? formatDate(getDate(tooltipData), timeframe) : null}
             </Typography>
-          </TooltipWithBounds>
+          </Tooltip>
         </Box>
       )}
     </Box>
