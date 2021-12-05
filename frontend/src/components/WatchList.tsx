@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid } from '@mui/material'
+import { Grid, Typography } from '@mui/material'
 
 import { checkToken, updateWatchList } from '../utils'
 import WatchCard from './WatchCard'
@@ -31,10 +31,14 @@ const WatchList: React.FC<WatchListProps> = ({ list, logout, setUser }) => {
     }
 
     return (
-        <Grid container spacing={2} sx={{p: 2.5}}>
-            {list?.map((pair, i) => {
-                return <WatchCard key={i} pair={pair} removeFromWatchList={removeFromWatchList}/>
-            })}
+        <Grid container spacing={2} sx={{p: 2.5, justifyContent: 'center'}}>
+            {list?.length ? (
+                list?.map((pair, i) => {
+                    return <WatchCard key={i} pair={pair} removeFromWatchList={removeFromWatchList}/>
+                })
+            ) : (
+                <Typography variant='h5' mt={2} >Click the heart on a Cryptocurrency to add it to your Watch List.</Typography>
+            )}
         </Grid>
     )
 }

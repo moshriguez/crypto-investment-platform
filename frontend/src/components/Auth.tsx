@@ -51,8 +51,7 @@ const Auth: React.FC<AuthProps> = ({ setUser }) => {
         } else {
             localStorage.setItem("jwt", data.token)
             setUser(data.result)
-            //TODO change to watch list once built
-            navigate('/')          
+            navigate('/watchlist')          
         }
     }
 
@@ -62,11 +61,11 @@ const Auth: React.FC<AuthProps> = ({ setUser }) => {
   
     return (
         <Container component='main' maxWidth='xs'>
-            <Paper elevation={3}>
+            <Paper elevation={3} sx={{display: 'flex', alignItems: 'center', flexDirection: 'column', p: 2, m: 2}}>
                 <Avatar>
                     <LockOutlinedIcon />
                 </Avatar>
-                <Typography component='h5' variant='h5'>{isSignUp ? 'Sign Up' : 'Sign In'}</Typography>
+                <Typography component='h5' variant='h5' mb={2}>{isSignUp ? 'Sign Up' : 'Sign In'}</Typography>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         {isSignUp && (
