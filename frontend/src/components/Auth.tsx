@@ -39,7 +39,7 @@ const Auth: React.FC<AuthProps> = ({ setUser }) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const url = 'http://localhost:5000/users/'
+        const url = 'https://crypto-investment-backend.herokuapp.com/users/'
         const configObj = {
             method: 'POST',
             headers: {
@@ -80,7 +80,7 @@ const Auth: React.FC<AuthProps> = ({ setUser }) => {
         if (!passwordRegex.test(formData.password)) {
             newErrors.password = 'Passwords must include a capital letter, a lowercase letter and a number.'
         }
-        const emailRegex = /^([A-Z|a-z|0-9](\.|_){0,1})+[A-Z|a-z|0-9]\@([A-Z|a-z|0-9])+((\.){0,1}[A-Z|a-z|0-9]){2}\.[a-z]{2,3}$/
+        const emailRegex = /^([A-Z|a-z|0-9](\.|_){0,1})+[A-Z|a-z|0-9]@([A-Z|a-z|0-9])+((\.){0,1}[A-Z|a-z|0-9]){2}\.[a-z]{2,3}$/
         if(!emailRegex.test(formData.email)){
             newErrors.email = 'Please enter a valid email address.'
         }

@@ -33,7 +33,6 @@ const Currency: React.FC<CurrencyProps> = ({ price, percentChange, logout, selec
 	const ref = useRef<HTMLDivElement>(null)
   const token = localStorage.getItem("jwt");
   let { pair } = useParams()
-  const abbv = pair ? pair.split('-')[0] : ''
   const pairInWatchList: boolean = useMemo(() => {
     if(user && pair) {
       return user.watchList.includes(pair)

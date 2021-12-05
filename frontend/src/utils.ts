@@ -5,6 +5,8 @@ import decode from "jwt-decode";
 import { Candle, HistoricalData, myJwtPayload, Timeframe, User } from "./types";
 
 const url = 'https://api.pro.coinbase.com'
+const backendUrl = 'https://crypto-investment-backend.herokuapp.com/users/'
+
 
 // Calculation Helpers
 export const findMinPrice = (arr: HistoricalData[]) => {
@@ -117,7 +119,7 @@ export const fetchUser = async (userId: string, token: string, setUser: (arg: Us
         Authorization: `Bearer ${token}`,
       },
     };
-    let res = await fetch("http://localhost:5000/users/" + userId, configObj);
+    let res = await fetch(backendUrl + userId, configObj);
     const data = await res.json();
     setUser(data.user);
   };
@@ -130,7 +132,7 @@ export const deleteUser = async (userId: string, token: string) => {
           Authorization: `Bearer ${token}`,
         }
     }
-    let res = await fetch("http://localhost:5000/users/" + userId, configObj);
+    let res = await fetch(backendUrl + userId, configObj);
     const data = await res.json();
     return data
 }
@@ -147,7 +149,7 @@ export const updateWatchList = async (userId: string, token: string, updatedList
     },
     body: JSON.stringify(body)
     }
-    const res = await fetch("http://localhost:5000/users/" + userId, configObj)
+    const res = await fetch(backendUrl + userId, configObj)
     const data = await res.json()
     setUser(data.user)
 }
