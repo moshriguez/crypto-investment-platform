@@ -34,8 +34,10 @@ const App = () => {
   
   const handleTradingPairSelect = (e: any, newValue: Pair | null) => {
     wsUnsub()
-    if(newValue) setSelectedTradingPair(newValue.id)
-    navigate('currency')
+    if(newValue) {
+      setSelectedTradingPair(newValue.id)
+      navigate(`/currency/${newValue.id}`)
+    }
   }
 
   const logout = (path: '/' | '/auth') => {
@@ -55,7 +57,7 @@ const App = () => {
         />
         <Routes>
           <Route path='/' element={<Home handleTradingPairSelect={handleTradingPairSelect} />} />
-          <Route path='/currency' element={
+          <Route path='/currency/:pair' element={
             <Currency 
               logout={logout}
               user={user}

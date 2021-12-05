@@ -1,4 +1,5 @@
 import React, {useEffect, useLayoutEffect, useState, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import { Chip, Container, IconButton, Stack, ToggleButtonGroup, ToggleButton, Typography } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
@@ -28,52 +29,54 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 
 	const ref = useRef<HTMLDivElement>(null)
   const token = localStorage.getItem("jwt");
+  let { pair } = useParams()
 
   useEffect(() => {
     // this runs everytime selectedTradingPair changes
-    if(selectedTradingPair === '') return
+    if(pair === undefined) return
     // subscribe to Coinbase via web socket
     const subscribe = {
       type: 'subscribe',
-      product_ids: [selectedTradingPair],
+      product_ids: [pair],
       channels: ['ticker']
     }
-    if (ws.current) {
+    if (ws.current && ws.current.readyState) {
+      wsUnsub()
       ws.current.send(JSON.stringify(subscribe))
+      console.log(ws.current)
       ws.current.onmessage = (e) => {
         const res: Digest = JSON.parse(e.data)
         setPrice(res.price)
         setPercentChange(calcPercentChange(res.open_24h, res.price))
       }
     }    
-    return () => {wsUnsub()}
-  }, [selectedTradingPair, ws, wsUnsub])
+  }, [pair, ws, wsUnsub])
 
 	useLayoutEffect(() => {
 		if (ref.current) {
 			setGraphWidth(ref.current.clientWidth)
 		}
-	}, [selectedTradingPair])
+	}, [pair])
   
 
   useEffect(() => {
-    if(selectedTradingPair === '') return
-    fetchCryptoName(selectedTradingPair, setCryptoName)
-    fetchHistoricalData(selectedTradingPair, setHistoricalData, timeframe)
-  }, [timeframe, selectedTradingPair])
+    if(pair === undefined) return
+    fetchCryptoName(pair, setCryptoName)
+    fetchHistoricalData(pair, setHistoricalData, timeframe)
+  }, [timeframe, pair])
 
   const toggleWatchList = async () => {
-    if (token) {
+    if (token && pair) {
       let decodedToken = checkToken(token)
 
       if (decodedToken) {
         if (user) {
           let updatedList
           // check if crypto is in watch list and add it or remove it
-          if (user.watchList.includes(selectedTradingPair)) {
-            updatedList = user.watchList.filter(el => el !== selectedTradingPair)
+          if (user.watchList.includes(pair)) {
+            updatedList = user.watchList.filter(el => el !== pair)
           } else {
-            updatedList = [...user.watchList, selectedTradingPair]
+            updatedList = [...user.watchList, pair]
           }
           updateWatchList(user._id, token, updatedList, setUser)
         }
@@ -100,12 +103,12 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 				pt: 2
 			}}>
 			<Stack direction='row' spacing={1}>
-				{user && (
+				{user && pair && (
 					<IconButton
 						aria-label="Remove from Watch List"
 						onClick={toggleWatchList}
 					>
-						{user.watchList.includes(selectedTradingPair) ? (
+						{user.watchList.includes(pair) ? (
 							<FavoriteIcon sx={{ color: red[500] }} />
 						) : (
 							<FavoriteBorderOutlinedIcon />
@@ -137,7 +140,7 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
         <ToggleButton value="3M" aria-label="3 months">3M</ToggleButton>
         {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
       </ToggleButtonGroup>
-      {selectedTradingPair && (
+      {pair && (
         <MainGraph
           data={historicalData}
           height={graphWidth * (1/2)}
