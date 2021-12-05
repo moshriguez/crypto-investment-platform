@@ -15,15 +15,15 @@ export const signin = async (req: Request, res: Response) => {
     try {
        const existingUser = await User.findOne({ email }) 
        // check if user exists
-       if(!existingUser) return res.status(404).json({ message: 'User does not exist.'})
+       if(!existingUser) return res.status(404).json({ message: 'A user does not exist with that email address.'})
        // check if password is correct
        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password)
-       if(!isPasswordCorrect) return res.status(400).json({ message: 'Invalid credentials'})
+       if(!isPasswordCorrect) return res.status(400).json({ message: 'Invalid password.'})
        // if all is good, create token
        const token = jwt.sign({id: existingUser._id}, SECRET, { expiresIn: '1h'})
        res.status(200).json({ result: existingUser, token })
     } catch (error) {
-        res.status(500).json({ message: 'Something went wrong.'})
+        res.status(500).json({ message: 'Something went wrong. Please try again.'})
     }
 }
 
@@ -32,9 +32,7 @@ export const signup = async (req: Request, res: Response) => {
     try {
         const existingUser = await User.findOne({ email })
         // check if user exists
-        if(existingUser) return res.status(400).json({ message: 'User already exists.'})
-        // check if password and confirm match
-        if(password !== confirm) return res.status(400).json({ message: 'Passwords do not match.'})
+        if(existingUser) return res.status(400).json({ message: 'A user already exists with that email address.'})
         // if all is good, hash password and create new user
         const hashedPassword = await bcrypt.hash(password, 12)
         const result = await User.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` })
@@ -44,7 +42,7 @@ export const signup = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: 'Something went wrong.'})
+        res.status(500).json({ message: 'Something went wrong. Please try again.'})
     }
 }
 

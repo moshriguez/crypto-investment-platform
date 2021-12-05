@@ -5,7 +5,7 @@ interface ConfirmDialogProps {
     open: boolean
     handleCloseConfirm: () => void
     dialogText: string
-    confirmCallback: () => void
+    confirmCallback?: () => void
 }
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleCloseConfirm, dialogText, confirmCallback }) => {
     return (
@@ -14,8 +14,10 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, handleCloseConfirm,
                 <DialogContentText id="alert-dialog-description">{dialogText}</DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={confirmCallback} >Yes</Button>
-                <Button onClick={handleCloseConfirm} >Cancel</Button>
+                {confirmCallback && (
+                    <Button onClick={confirmCallback} >Yes</Button>
+                )}
+                <Button onClick={handleCloseConfirm} >{confirmCallback ? 'Cancel' : 'OK'}</Button>
             </DialogActions>
         </Dialog>
     )

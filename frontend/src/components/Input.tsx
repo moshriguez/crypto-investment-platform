@@ -8,6 +8,8 @@ interface InputProps {
   label: string;
   value: string
   half?: boolean;
+  error: boolean
+  helperText: string
   type?: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleShowPassword?: () => void;
@@ -19,12 +21,16 @@ const Input: React.FC<InputProps> = ({
   label,
   name,
   type = "text",
-  value
+  value,
+  error,
+  helperText
 }) => {
   return (
     <Grid item xs={12} sm={half ? 6 : 12}>
       <TextField
       // use error and helperText prop to add validations and error notifications
+        error={error}
+        helperText={helperText}
         name={name}
         value={value}
         onChange={handleChange}
