@@ -12,21 +12,22 @@ import { calcPercentChange, checkToken, currencyFormatter, fetchCryptoName, fetc
 import { Digest, HistoricalData, Timeframe, User } from '../types'
 
 interface CurrencyProps {
+  price: string
+  percentChange: string
   logout: (path: '/' | '/auth') => void
   user: User | null
   setUser: (arg: User | null) => void
   selectedTradingPair: string
-  ws: React.MutableRefObject<WebSocket | null>
+  ws: WebSocket | null
   wsUnsub: () => void
 }
 
-const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, setUser, ws, wsUnsub }) => {
+
+const Currency: React.FC<CurrencyProps> = ({ price, percentChange, logout, selectedTradingPair, user, setUser, ws, wsUnsub }) => {
 	const [graphWidth, setGraphWidth] = useState(0)
   const [cryptoName, setCryptoName] = useState('')
   const [historicalData, setHistoricalData] = useState<HistoricalData[]>([])
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
-  const [price, setPrice] = useState('')
-  const [percentChange, setPercentChange] = useState('')
   const [confirmOpen, setConfirmOpen] = useState(false)
 
 	const ref = useRef<HTMLDivElement>(null)
@@ -65,17 +66,12 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
       product_ids: [pair],
       channels: ['ticker']
     }
-    if (ws.current && ws.current.readyState) {
-      wsUnsub()
-      ws.current.send(JSON.stringify(subscribe))
-      console.log(ws.current)
-      ws.current.onmessage = (e) => {
-        const res: Digest = JSON.parse(e.data)
-        setPrice(res.price)
-        setPercentChange(calcPercentChange(res.open_24h, res.price))
-      }
-    }    
-  }, [pair, ws, wsUnsub])
+    if (ws) {
+      ws.send(JSON.stringify(subscribe))
+    }
+
+    return () => wsUnsub()
+  }, [pair, ws])
 
 	useLayoutEffect(() => {
 		if (ref.current) {
