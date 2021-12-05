@@ -40,7 +40,7 @@ const App = () => {
       const message: Digest = JSON.parse(e.data)
       setPrice(message.price)
       setPercentChange(calcPercentChange(message.open_24h, message.price))
-      console.log(message)
+      // console.log(message)
     }
 
     webSock.onclose = e => {

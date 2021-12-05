@@ -7,9 +7,9 @@ import { red } from '@mui/material/colors';
 
 import ConfirmDialog from './ConfirmDialog';
 import MainGraph from './MainGraph';
-import { calcPercentChange, checkToken, currencyFormatter, fetchCryptoName, fetchHistoricalData, updateWatchList } from '../utils'
+import { checkToken, currencyFormatter, fetchCryptoName, fetchHistoricalData, updateWatchList } from '../utils'
 // Types
-import { Digest, HistoricalData, Timeframe, User } from '../types'
+import { HistoricalData, Timeframe, User } from '../types'
 
 interface CurrencyProps {
   price: string
@@ -160,20 +160,18 @@ const Currency: React.FC<CurrencyProps> = ({ price, percentChange, logout, selec
         <ToggleButton value="3M" aria-label="3 months">3M</ToggleButton>
         {/* <ToggleButton value='1Y' aria-label='1 year'>1Y</ToggleButton> */}
       </ToggleButtonGroup>
-      {pair && (
-        <MainGraph
-          data={historicalData}
-          height={graphWidth * (1/2)}
-          width={graphWidth}
-          margin={{
-            top: 16,
-            right: 16,
-            bottom: 40,
-            left: 48,
-          }}
-          timeframe={timeframe}
-        />
-      )}
+      <MainGraph
+        data={historicalData}
+        height={graphWidth * (1/2)}
+        width={graphWidth}
+        margin={{
+          top: 16,
+          right: 16,
+          bottom: 40,
+          left: 48,
+        }}
+        timeframe={timeframe}
+      />
     </Container>
     <ConfirmDialog 
       open={confirmOpen}
