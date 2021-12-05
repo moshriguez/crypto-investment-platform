@@ -1,5 +1,4 @@
 import React, {useEffect, useLayoutEffect, useState, useRef } from 'react'
-import { useNavigate } from "react-router-dom";
 import { Chip, Container, IconButton, Stack, ToggleButtonGroup, ToggleButton, Typography } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
@@ -7,12 +6,12 @@ import { red } from '@mui/material/colors';
 import decode, { JwtPayload } from "jwt-decode";
 
 import MainGraph from './MainGraph';
-import { calcPercentChange, currencyFormatter, fetchCryptoName, fetchHistoricalData } from '../utils'
+import { calcPercentChange, checkToken, currencyFormatter, fetchCryptoName, fetchHistoricalData } from '../utils'
 // Types
 import { Digest, HistoricalData, Timeframe, User } from '../types'
 
 interface CurrencyProps {
-  logout: () => void
+  logout: (path: '/' | '/auth') => void
   user: User | null
   setUser: (arg: User | null) => void
   selectedTradingPair: string
@@ -28,7 +27,6 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
   const [price, setPrice] = useState('')
   const [percentChange, setPercentChange] = useState('')
 
-  const navigate = useNavigate();
 	const ref = useRef<HTMLDivElement>(null)
   const token = localStorage.getItem("jwt");
 
@@ -67,38 +65,35 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 
   const toggleWatchList = async () => {
     if (token) {
-      const decodedToken: JwtPayload = decode(token);
+      let decodedToken = checkToken(token)
 
-      if (decodedToken.exp !== undefined) {
-        if (decodedToken.exp * 1000 < new Date().getTime()) {
-          console.log("expired token");
-          logout();
-          navigate('/auth')
-        } else {
-          if (user) {
-            let updatedList
-            // check if crypto is in watch list and add it or remove it
-            if (user.watchList.includes(selectedTradingPair)) {
-              updatedList = user.watchList.filter(el => el !== selectedTradingPair)
-            } else {
-              updatedList = [...user.watchList, selectedTradingPair]
-            }
-            const body = {
-              watchList: updatedList
-            }
-            const configObj = {
-              method: 'PATCH',
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-              },
-              body: JSON.stringify(body)
-            }
-            const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
-            const data = await res.json()
-            setUser(data.user)
+      if (decodedToken) {
+        if (user) {
+          let updatedList
+          // check if crypto is in watch list and add it or remove it
+          if (user.watchList.includes(selectedTradingPair)) {
+            updatedList = user.watchList.filter(el => el !== selectedTradingPair)
+          } else {
+            updatedList = [...user.watchList, selectedTradingPair]
           }
+          const body = {
+            watchList: updatedList
+          }
+          const configObj = {
+            method: 'PATCH',
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+          }
+          const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
+          const data = await res.json()
+          setUser(data.user)
         }
+      } else {
+        console.log("expired token");
+        logout('/auth');
       }
     }
   }

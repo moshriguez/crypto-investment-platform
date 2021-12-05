@@ -1,3 +1,5 @@
+import { JwtPayload } from "jwt-decode";
+
 export interface Pair {
     id: string
     base_currency: string
@@ -55,3 +57,5 @@ export interface User {
     watchList: string[]
     _id: string
 }
+
+export type myJwtPayload = JwtPayload & { id: string };

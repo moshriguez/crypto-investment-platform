@@ -38,9 +38,10 @@ const App = () => {
     navigate('currency')
   }
 
-  const logout = () => {
+  const logout = (path: '/' | '/auth') => {
     localStorage.clear();
     setUser(null);
+    navigate(path)
   };
 
   return (

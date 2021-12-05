@@ -12,10 +12,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import decode, { JwtPayload } from "jwt-decode";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import AutoDropdown from './AutoDropdown'
+import { checkToken, fetchUser } from '../utils'
 // Types
 import { Pair, User } from "../types";
 
@@ -24,7 +24,7 @@ interface NavBarProps {
   handleTradingPairSelect: (e: any, newValue: Pair | null) => void;
   user: User | null;
   setUser: (arg: User | null) => void;
-  logout: () => void
+  logout: (path: '/' | '/auth') => void
 }
 const NavBar: React.FC<NavBarProps> = ({
   handleTradingPairSelect,
@@ -32,7 +32,6 @@ const NavBar: React.FC<NavBarProps> = ({
   setUser,
   logout
 }) => {
-  const navigate = useNavigate();
   const location = useLocation()
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -47,50 +46,43 @@ const NavBar: React.FC<NavBarProps> = ({
   const token = localStorage.getItem("jwt");
   
   useEffect(() => {
-    if (token) {
-      type myJwtPayload = JwtPayload & { id: string };
-      const decodedToken: myJwtPayload = decode(token);
+    if(token) {
+      
+      let decodedToken = checkToken(token)
 
-      if (decodedToken.exp !== undefined) {
-        if (decodedToken.exp * 1000 < new Date().getTime()) {
-          console.log("expired token");
-          logout();
-          navigate('/auth')
-        } else {
-          const fetchUser = async () => {
-            const configObj = {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            };
-            let res = await fetch("http://localhost:5000/users/" + decodedToken.id, configObj);
-            const data = await res.json();
-            setUser(data.user);
-          };
-          fetchUser();
-        }
+      if (decodedToken) {
+        fetchUser(decodedToken.id, token, setUser);
+      } else {
+        console.log("expired token");
+        logout('/auth');
       }
     }
   }, [token]);
 
   const deleteUser = async () => {
-    const configObj = {
-      method: 'DELETE',
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    if(token) {
+      let decodedToken = checkToken(token)
+
+      if(decodedToken) {
+        const configObj = {
+          method: 'DELETE',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          }
+        }
+        console.log('here')
+        if (user) {
+          let res = await fetch("http://localhost:5000/users/" + user._id, configObj);
+          const data = await res.json();
+          console.log(data, token)
+        }
+        logout('/')
+      } else {
+        console.log("expired token");
+        logout('/auth');
       }
     }
-    console.log('here')
-    if (user) {
-      let res = await fetch("http://localhost:5000/users/" + user._id, configObj);
-      const data = await res.json();
-      console.log(data, token)
-    }
-    logout()
-    navigate('/')
   }
 
   return (
@@ -155,8 +147,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      logout();
-                      navigate('/auth')
+                      logout('/auth');
                       handleCloseUserMenu();
                     }}
                   >

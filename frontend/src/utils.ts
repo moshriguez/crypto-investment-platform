@@ -1,7 +1,8 @@
 import numeral from 'numeral'
 import { format } from 'date-fns'
+import decode from "jwt-decode";
 
-import { Candle, HistoricalData, Timeframe } from "./types";
+import { Candle, HistoricalData, myJwtPayload, Timeframe, User } from "./types";
 
 const url = 'https://api.pro.coinbase.com'
 
@@ -96,3 +97,27 @@ export const fetchHistoricalData = async (pair: string, setHistoricalData: (arr:
     setHistoricalData(formattedData)
   }
 
+export const checkToken = (token: string) => {
+    const decodedToken: myJwtPayload = decode(token);
+    if (decodedToken.exp !== undefined) {
+        if (decodedToken.exp * 1000 < new Date().getTime()) {
+            return false
+        } else {
+            return decodedToken
+        }
+    }
+    return false
+}
+
+export const fetchUser = async (userId: string, token: string, setUser: (arg: User | null) => void) => {
+    const configObj = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    let res = await fetch("http://localhost:5000/users/" + userId, configObj);
+    const data = await res.json();
+    setUser(data.user);
+  };
