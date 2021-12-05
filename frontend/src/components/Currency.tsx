@@ -1,10 +1,11 @@
-import React, {useEffect, useLayoutEffect, useState, useRef } from 'react'
+import React, {useEffect, useLayoutEffect, useMemo, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { Chip, Container, IconButton, Stack, ToggleButtonGroup, ToggleButton, Typography } from '@mui/material'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { red } from '@mui/material/colors';
 
+import ConfirmDialog from './ConfirmDialog';
 import MainGraph from './MainGraph';
 import { calcPercentChange, checkToken, currencyFormatter, fetchCryptoName, fetchHistoricalData, updateWatchList } from '../utils'
 // Types
@@ -26,10 +27,34 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
   const [price, setPrice] = useState('')
   const [percentChange, setPercentChange] = useState('')
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
 	const ref = useRef<HTMLDivElement>(null)
   const token = localStorage.getItem("jwt");
   let { pair } = useParams()
+  const abbv = pair ? pair.split('-')[0] : ''
+  const pairInWatchList: boolean = useMemo(() => {
+    if(user && pair) {
+      return user.watchList.includes(pair)
+    } else {
+      return false
+    }}, [user, pair])
+
+  const handleOpenConfirm = () => {
+    setConfirmOpen(true)
+  }
+
+  const handleCloseConfirm = () => {
+    setConfirmOpen(false)
+  }
+
+  const confirmRemove = () => {
+    if (user && pair !== undefined && token) {
+      let updatedList = user.watchList.filter(el => el !== pair)
+      updateWatchList(user._id, token, updatedList, setUser)
+    }
+    handleCloseConfirm()
+  }
 
   useEffect(() => {
     // this runs everytime selectedTradingPair changes
@@ -58,7 +83,6 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 		}
 	}, [pair])
   
-
   useEffect(() => {
     if(pair === undefined) return
     fetchCryptoName(pair, setCryptoName)
@@ -71,14 +95,13 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 
       if (decodedToken) {
         if (user) {
-          let updatedList
           // check if crypto is in watch list and add it or remove it
-          if (user.watchList.includes(pair)) {
-            updatedList = user.watchList.filter(el => el !== pair)
+          if (pairInWatchList) {
+            handleOpenConfirm()
           } else {
-            updatedList = [...user.watchList, pair]
+            let updatedList = [...user.watchList, pair]
+            updateWatchList(user._id, token, updatedList, setUser)
           }
-          updateWatchList(user._id, token, updatedList, setUser)
         }
       } else {
         console.log("expired token");
@@ -92,6 +115,7 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
   }
 
   return (
+    <>
     <Container 
 			maxWidth='md' 
 			ref={ref} 
@@ -108,7 +132,7 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
 						aria-label="Remove from Watch List"
 						onClick={toggleWatchList}
 					>
-						{user.watchList.includes(pair) ? (
+						{pairInWatchList ? (
 							<FavoriteIcon sx={{ color: red[500] }} />
 						) : (
 							<FavoriteBorderOutlinedIcon />
@@ -155,6 +179,13 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
         />
       )}
     </Container>
+    <ConfirmDialog 
+      open={confirmOpen}
+      handleCloseConfirm={handleCloseConfirm}
+      dialogText={`Are you sure you want to quit following ${abbv}?`}
+      confirmCallback={confirmRemove}
+    />
+    </>
   );
 }
 
