@@ -1,11 +1,10 @@
 import React from 'react'
 import { Grid } from '@mui/material'
 
-import { checkToken } from '../utils'
+import { checkToken, updateWatchList } from '../utils'
 import WatchCard from './WatchCard'
 // Types
 import { User } from '../types'
-
 
 interface WatchListProps {
     list: string[] | null
@@ -22,20 +21,7 @@ const WatchList: React.FC<WatchListProps> = ({ list, logout, setUser }) => {
             if (decodedToken) {
                 if(list) {
                     let updatedList = list.filter(el => el !== pair)
-                    const body = {
-                        watchList: updatedList
-                        }
-                        const configObj = {
-                        method: 'PATCH',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`
-                        },
-                        body: JSON.stringify(body)
-                        }
-                        const res = await fetch("http://localhost:5000/users/" + decodedToken.id, configObj)
-                        const data = await res.json()
-                        setUser(data.user)
+                    updateWatchList(decodedToken.id, token, updatedList, setUser)
                 }
             } else {
                 console.log("expired token");

@@ -57,7 +57,7 @@ const NavBar: React.FC<NavBarProps> = ({
         logout('/auth');
       }
     }
-  }, [token]);
+  }, [token, setUser]);
 
   const handleDeleteUser = async () => {
     if(token) {

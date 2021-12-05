@@ -3,10 +3,9 @@ import { Chip, Container, IconButton, Stack, ToggleButtonGroup, ToggleButton, Ty
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import { red } from '@mui/material/colors';
-import decode, { JwtPayload } from "jwt-decode";
 
 import MainGraph from './MainGraph';
-import { calcPercentChange, checkToken, currencyFormatter, fetchCryptoName, fetchHistoricalData } from '../utils'
+import { calcPercentChange, checkToken, currencyFormatter, fetchCryptoName, fetchHistoricalData, updateWatchList } from '../utils'
 // Types
 import { Digest, HistoricalData, Timeframe, User } from '../types'
 
@@ -76,20 +75,7 @@ const Currency: React.FC<CurrencyProps> = ({ logout, selectedTradingPair, user, 
           } else {
             updatedList = [...user.watchList, selectedTradingPair]
           }
-          const body = {
-            watchList: updatedList
-          }
-          const configObj = {
-            method: 'PATCH',
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(body)
-          }
-          const res = await fetch("http://localhost:5000/users/" + user._id, configObj)
-          const data = await res.json()
-          setUser(data.user)
+          updateWatchList(user._id, token, updatedList, setUser)
         }
       } else {
         console.log("expired token");

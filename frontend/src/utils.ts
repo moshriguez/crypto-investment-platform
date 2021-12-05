@@ -134,3 +134,20 @@ export const deleteUser = async (userId: string, token: string) => {
     const data = await res.json();
     return data
 }
+
+export const updateWatchList = async (userId: string, token: string, updatedList: string[], setUser: (arg: User | null) => void) => {
+    const body = {
+        watchList: updatedList
+    }
+    const configObj = {
+        method: 'PATCH',
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(body)
+    }
+    const res = await fetch("http://localhost:5000/users/" + userId, configObj)
+    const data = await res.json()
+    setUser(data.user)
+}
