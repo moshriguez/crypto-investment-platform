@@ -30,7 +30,6 @@ interface MainGraphProps {
 
 const MainGraph: React.FC<MainGraphProps> = ({
   border,
-  children,
   data,
   width,
   height,
@@ -97,7 +96,7 @@ const MainGraph: React.FC<MainGraphProps> = ({
         tooltipTop: priceScale(getPrice(d)),
       });
     },
-    [showTooltip, priceScale, dateScale, data, margin.left]
+    [showTooltip, priceScale, dateScale, data, margin.left, bisectDate]
   );
 
   return (
