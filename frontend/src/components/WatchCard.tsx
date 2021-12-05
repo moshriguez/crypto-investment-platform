@@ -4,6 +4,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import { red } from '@mui/material/colors'
 
 import MainGraph from './MainGraph';
+import ConfirmDialog from './ConfirmDialog';
 import { currencyFormatter, fetchCryptoName, fetchHistoricalData } from '../utils'
 // Types
 import { HistoricalData } from '../types'
@@ -106,15 +107,12 @@ const WatchCard: React.FC<WatchCardProps> = ({ pair, removeFromWatchList }) => {
                 </CardContent>
             </Card>
         </Grid>
-        <Dialog open={confirmOpen} onClose={handleCloseConfirm} aria-describedby="alert-dialog-description">
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">{`Are you sure you want to quit following ${abbv}?`}</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={confirmRemove} >Yes</Button>
-                <Button onClick={handleCloseConfirm} >Cancel</Button>
-            </DialogActions>
-        </Dialog>
+        <ConfirmDialog 
+            open={confirmOpen}
+            handleCloseConfirm={handleCloseConfirm}
+            dialogText={`Are you sure you want to quit following ${abbv}?`}
+            confirmCallback={confirmRemove}
+        />
         </>
     )
 }
