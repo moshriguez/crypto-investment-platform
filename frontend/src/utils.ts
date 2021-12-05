@@ -121,3 +121,16 @@ export const fetchUser = async (userId: string, token: string, setUser: (arg: Us
     const data = await res.json();
     setUser(data.user);
   };
+
+export const deleteUser = async (userId: string, token: string) => {
+    const configObj = {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+    }
+    let res = await fetch("http://localhost:5000/users/" + userId, configObj);
+    const data = await res.json();
+    return data
+}

@@ -15,7 +15,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 
 import AutoDropdown from './AutoDropdown'
-import { checkToken, fetchUser } from '../utils'
+import { checkToken, deleteUser, fetchUser } from '../utils'
 // Types
 import { Pair, User } from "../types";
 
@@ -59,24 +59,12 @@ const NavBar: React.FC<NavBarProps> = ({
     }
   }, [token]);
 
-  const deleteUser = async () => {
+  const handleDeleteUser = async () => {
     if(token) {
       let decodedToken = checkToken(token)
 
       if(decodedToken) {
-        const configObj = {
-          method: 'DELETE',
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        }
-        console.log('here')
-        if (user) {
-          let res = await fetch("http://localhost:5000/users/" + user._id, configObj);
-          const data = await res.json();
-          console.log(data, token)
-        }
+        if(user) deleteUser(user._id, token)
         logout('/')
       } else {
         console.log("expired token");
@@ -140,7 +128,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   onClose={handleCloseUserMenu}
                 >
                   <MenuItem onClick={() => {
-                    deleteUser()
+                    handleDeleteUser()
                     handleCloseUserMenu()
                   }}>
                     <Typography textAlign="center">Delete Account</Typography>
