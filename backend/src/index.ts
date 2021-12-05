@@ -14,6 +14,10 @@ app.use(cors())
 
 app.use('/users', userRoutes)
 
+app.get('/', (req, res) => {
+    res.send('Hello to Crypto Investment Platform API')
+})
+
 const PORT = process.env.PORT || 5000
 const URL = process.env.CONNECTION_URL!
 
